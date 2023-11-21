@@ -10,7 +10,7 @@ This project will be built using unity and mesa (python framework), during this 
 - Blender (to build assets)
 
 ### Collaborators
-- Omar Arenas
+- Omar Rivera Arenas
 - Francisco Martinez Gallardo
 
 ### Teachers
