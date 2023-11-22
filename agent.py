@@ -25,6 +25,7 @@ class Car(Agent):
         Determines if the agent can move in the direction that was chosen
         """
         # Check that the agent in possible_steps are rooads and get the direction of the road
+
         path = aStar(self.model.graph, self.pos, self.goal)
         print(path)
         if len(path) > 1:

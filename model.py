@@ -3,6 +3,7 @@ from mesa.time import RandomActivation
 from mesa.space import MultiGrid
 from agent import *
 import json
+import random
 
 
 class CityModel(Model):
@@ -67,10 +68,55 @@ class CityModel(Model):
         self.num_agents = N
         self.running = True
 
+        self.fillTrafficLightsEdges()
+        # self.fillOtherEdges()
+        print(self.graph)
+
         # self.fillOtherEdges()
 
     # Step function. Called every step of the simulation.
 
+    ############################
+    #### Graph functions #######
+    ############################
+    # Traffic lights edges
+    def fillTrafficLightsEdges(self):
+        """
+        This function fills the graph with the edges from the traffic lights.
+        """
+        # Iterate through the traffic lights
+        for traffic_light in self.traffic_lights:
+            # Get traffic light neighborhood and detect the road agents
+            neighborhood = self.grid.get_neighborhood(
+                traffic_light.pos, moore=False, include_center=False
+            )
+            for neighbor in neighborhood:
+                if self.getPosAgent(neighbor, Road):
+                    # Get the direction of the road
+                    agent = self.getPosAgent(neighbor, Road)
+                    direction = agent.direction
+                    if self.graph[agent.pos][0] == traffic_light.pos:
+                        self.graph[traffic_light.pos] = [
+                            self.generateLightEdge(traffic_light.pos, direction)
+                        ]
+
+    def generateLightEdge(self, traffic_light_pos, direction):
+        """
+        This function generates the edge of a traffic light.
+        """
+        if direction == "Right":
+            return (traffic_light_pos[0] + 1, traffic_light_pos[1])
+        elif direction == "Left":
+            return (traffic_light_pos[0] - 1, traffic_light_pos[1])
+        elif direction == "Up":
+            return (traffic_light_pos[0], traffic_light_pos[1] + 1)
+        elif direction == "Down":
+            return (traffic_light_pos[0], traffic_light_pos[1] - 1)
+        else:
+            return False
+        # Get traffic light neighborhood and detect the road agents
+
+    # Extra edges
     def fillOtherEdges(self):
         """
         This function fills the graph with the other edges from the roads.
@@ -81,41 +127,11 @@ class CityModel(Model):
             if len(self.graph[node]) == 1:
                 # If the node has only one edge, then we need to find the other edge
                 # Get the direction of the node
-                direction = self.getPosAgent(node, Road).direction
+                if self.getPosAgent(node, Road):
+                    direction = self.getPosAgent(node, Road).direction
+
                 # Append the other edge to the graph
                 self.getOtherConnectedNode(direction, node)
-
-    def countCarAgents(self):
-        """Counts the number of car agents in the simulation."""
-        count = 0
-        for agent in self.schedule.agents:
-            if isinstance(agent, Car):
-                count += 1
-        return count
-
-    def findSpawnPostion(self):
-        """Finds a spawn location for a car agent."""
-        for agent in self.grid.coord_iter():
-            if isinstance(agent[0][0], Road):
-                direction = agent[0][0].direction
-                position = agent[1]
-                if self.checkSpawnPosition(position, direction):
-                    return position
-        return False
-
-    def checkSpawnPosition(self, position, direction):
-        """Checks if a spawn position is valid."""
-        if position[0] == 0 and direction == "Right":
-            return True
-        elif position[0] == self.width - 1 and direction == "Left":
-            return True
-        elif position[1] == 0 and direction == "Up":
-            return True
-        elif position[1] == self.width - 1 and direction == "Down":
-            return True
-        else:
-            print("Not valid")
-            return False
 
     def getFirstConnectedNode(self, direction, position):
         """Gets the first connected node to based on direction."""
@@ -125,9 +141,9 @@ class CityModel(Model):
         elif direction == "Left":
             edge = (position[0] - 1, position[1])
         elif direction == "Up":
-            edge = (position[0], position[1] - 1)
-        elif direction == "Down":
             edge = (position[0], position[1] + 1)
+        elif direction == "Down":
+            edge = (position[0], position[1] - 1)
         else:
             return False
 
@@ -151,7 +167,6 @@ class CityModel(Model):
             (position[0] + 1, position[0] - 1), Road
         ):
             self.graph[position].append((position[0] + 1, position[1] - 1))
-
         elif direction == "Left" and self.getPosAgent(
             (position[0] - 1, position[0] + 1), Road
         ):
@@ -181,23 +196,60 @@ class CityModel(Model):
 
     def getPosAgent(self, position, object=Road):
         """Gets the road agent on a a position."""
+        for agent in self.grid.get_cell_list_contents([position]):
+            if isinstance(agent, object):
+                return agent
 
-        try:
-            for agent in self.grid.get_cell_list_contents([position]):
-                if isinstance(agent, object):
-                    return agent
-        except:
-            print(position)
-            return False
         return False
+
+    def countCarAgents(self):
+        """Counts the number of car agents in the simulation."""
+        count = 0
+        for agent in self.schedule.agents:
+            if isinstance(agent, Car):
+                count += 1
+        return count
+
+    ############################
+    #### Spawn functions #######
+    ############################
+
+    def findSpawnPostion(self):
+        """Finds a spawn location for a car agent."""
+        possibleSpawnLocations = []
+        for agent in self.grid.coord_iter():
+            if isinstance(agent[0][0], Road):
+                direction = agent[0][0].direction
+                position = agent[1]
+                if self.checkSpawnPosition(position, direction):
+                    possibleSpawnLocations.append(position)
+
+        # Return a random spawn location
+        if len(possibleSpawnLocations) > 0:
+            return random.choice(possibleSpawnLocations)
+        else:
+            return False
+
+    def checkSpawnPosition(self, position, direction):
+        """Checks if a spawn position is valid."""
+        if position[0] == 0 and direction == "Right":
+            return True
+        elif position[0] == self.width - 1 and direction == "Left":
+            return True
+        elif position[1] == 0 and direction == "Up":
+            return True
+        elif position[1] == self.width - 1 and direction == "Down":
+            return True
+        else:
+            return False
 
     def step(self):
         """Advance the model by one step."""
         if self.step_count % 10 == 0:
             spawn_position = self.findSpawnPostion()
             if spawn_position:
-                car = Car(f"c_{self.step_count}", self, (3, 0))
-                self.grid.place_agent(car, spawn_position)
+                car = Car(f"c_{self.step_count}", self, (1, 10))
+                self.grid.place_agent(car, (0, 0))
                 self.schedule.add(car)
 
         self.step_count += 1
