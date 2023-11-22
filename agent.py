@@ -1,4 +1,5 @@
 from mesa import Agent
+from aStar import aStar
 
 
 class Car(Agent):
@@ -9,7 +10,7 @@ class Car(Agent):
         direction: Randomly chosen direction chosen from one of eight directions
     """
 
-    def __init__(self, unique_id, model):
+    def __init__(self, unique_id, model, goal):
         """
         Creates a new random agent.
         Args:
@@ -17,12 +18,22 @@ class Car(Agent):
             model: Model reference for the agent
         """
         super().__init__(unique_id, model)
+        self.goal = goal
 
     def move(self):
         """
         Determines if the agent can move in the direction that was chosen
         """
-        # self.model.grid.move_to_empty(self)
+        # Check that the agent in possible_steps are rooads and get the direction of the road
+        path = aStar(self.model.graph, self.pos, self.goal)
+        print(path)
+        if len(path) > 1:
+            next_move = path[1]
+        else:
+            return
+
+        # Move the agent to next_move
+        self.model.grid.move_agent(self, next_move)
 
     def step(self):
         """
