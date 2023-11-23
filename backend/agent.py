@@ -27,9 +27,14 @@ class Car(Agent):
         # Check that the agent in possible_steps are rooads and get the direction of the road
 
         path = aStar(self.model.graph, self.pos, self.goal)
+        if path == None:
+            print(path)
+            print(self.pos, self.goal)
         if len(path) > 1:
             next_move = path[1]
         else:
+            self.model.grid.remove_agent(self)
+            self.model.schedule.remove(self)
             return
 
         next_move = self.checkTrafficLight(next_move)
