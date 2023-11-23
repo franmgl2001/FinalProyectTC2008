@@ -27,18 +27,37 @@ class Car(Agent):
         # Check that the agent in possible_steps are rooads and get the direction of the road
 
         path = aStar(self.model.graph, self.pos, self.goal)
-        print(path)
         if len(path) > 1:
             next_move = path[1]
         else:
             return
 
+        next_move = self.checkTrafficLight(next_move)
+
         # Move the agent to next_move
         self.model.grid.move_agent(self, next_move)
+
+    ############################
+    ## Trafic light functions###
+    ############################
+    def checkTrafficLight(self, next_move):
+        """
+        Checks if the next move is a traffic light
+        """
+        agent = self.model.getPosAgent(next_move, Traffic_Light)
+        if agent:
+            if agent.state:
+                # If it is green, move
+                self.model.grid.move_agent(self, next_move)
+                return next_move
+            else:
+                return self.pos
+        return next_move
 
     def step(self):
         """
         Determines the new direction it will take, and then moves
+
         """
         self.move()
 
