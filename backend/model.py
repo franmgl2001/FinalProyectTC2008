@@ -22,7 +22,7 @@ class CityModel(Model):
         self.max_agents = 10
         self.graph = {}
         self.step_count = 0
-
+        self.destinations = []
         # Load the map file. The map file is a text file where each character represents an agent.
         with open("city_files/2022_base.txt") as baseFile:
             lines = baseFile.readlines()
@@ -64,21 +64,46 @@ class CityModel(Model):
                     elif col == "D":
                         agent = Destination(f"d_{r*self.width+c}", self)
                         self.grid.place_agent(agent, (c, self.height - r - 1))
+                        self.destinations.append(agent.pos)
 
         self.num_agents = N
         self.running = True
 
         self.fillTrafficLightsEdges()
-        # self.fillOtherEdges()
+        self.fillOtherEdges()
         print(self.graph)
-
-        # self.fillOtherEdges()
 
     # Step function. Called every step of the simulation.
 
     ############################
     #### Graph functions #######
     ############################
+
+    # First connected node
+    def getFirstConnectedNode(self, direction, position):
+        """Gets the first connected node to based on direction."""
+        edge = None
+        if direction == "Right":
+            edge = (position[0] + 1, position[1])
+        elif direction == "Left":
+            edge = (position[0] - 1, position[1])
+        elif direction == "Up":
+            edge = (position[0], position[1] + 1)
+        elif direction == "Down":
+            edge = (position[0], position[1] - 1)
+        else:
+            return False
+
+        if (
+            edge[0] >= 0
+            and edge[0] < self.width
+            and edge[1] >= 0
+            and edge[1] < self.height
+        ):
+            return edge
+        else:
+            return False
+
     # Traffic lights edges
     def fillTrafficLightsEdges(self):
         """
@@ -125,56 +150,36 @@ class CityModel(Model):
         for node in self.graph:
             # Iterate through the edges of the node
             if len(self.graph[node]) == 1:
-                # If the node has only one edge, then we need to find the other edge
-                # Get the direction of the node
+                # If the node has only one edge, then we need to find the other edges
                 if self.getPosAgent(node, Road):
                     direction = self.getPosAgent(node, Road).direction
-
-                # Append the other edge to the graph
-                self.getOtherConnectedNode(direction, node)
-
-    def getFirstConnectedNode(self, direction, position):
-        """Gets the first connected node to based on direction."""
-        edge = None
-        if direction == "Right":
-            edge = (position[0] + 1, position[1])
-        elif direction == "Left":
-            edge = (position[0] - 1, position[1])
-        elif direction == "Up":
-            edge = (position[0], position[1] + 1)
-        elif direction == "Down":
-            edge = (position[0], position[1] - 1)
-        else:
-            return False
-
-        if (
-            edge[0] >= 0
-            and edge[0] < self.width
-            and edge[1] >= 0
-            and edge[1] < self.height
-        ):
-            return edge
-        else:
-            return False
+                    self.getOtherConnectedNode(direction, node)
 
     def getOtherConnectedNode(self, direction, position):
         """Gets the first connected node to based on direction."""
-        if direction == "Right" and self.getPosAgent(
-            (position[0] + 1, position[0] + 1), Road
-        ):
-            self.graph[position].append((position[0] + 1, position[1] + 1))
-        elif direction == "Right" and self.getPosAgent(
-            (position[0] + 1, position[0] - 1), Road
-        ):
-            self.graph[position].append((position[0] + 1, position[1] - 1))
-        elif direction == "Left" and self.getPosAgent(
-            (position[0] - 1, position[0] + 1), Road
-        ):
-            self.graph[position].append((position[0] - 1, position[1] + 1))
-        elif direction == "Left" and self.getPosAgent(
-            (position[0] - 1, position[0] - 1), Road
-        ):
-            self.graph[position].append((position[0] - 1, position[1] - 1))
+
+        if position[1] != self.height - 1:
+            if direction == "Right" and self.getPosAgent(
+                (position[0] + 1, position[1] + 1), Road
+            ):
+                self.graph[position].append((position[0] + 1, position[1] + 1))
+
+            if direction == "Left" and self.getPosAgent(
+                (position[0] - 1, position[1] + 1), Road
+            ):
+                self.graph[position].append((position[0] - 1, position[1] + 1))
+
+        if position[1] != 0:
+            if direction == "Right" and self.getPosAgent(
+                (position[0] + 1, position[1] - 1), Road
+            ):
+                self.graph[position].append((position[0] + 1, position[1] - 1))
+
+            if direction == "Left" and self.getPosAgent(
+                (position[0] - 1, position[1] - 1), Road
+            ):
+                self.graph[position].append((position[0] - 1, position[1] - 1))
+
         """
         elif direction == "Up" and self.getPosAgent(
             (position[0] + 1, position[0] + 1), Road
@@ -242,6 +247,10 @@ class CityModel(Model):
             return True
         else:
             return False
+
+    ############################
+    #### Destiny functions #####
+    ############################
 
     def step(self):
         """Advance the model by one step."""
