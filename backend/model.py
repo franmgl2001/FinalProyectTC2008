@@ -71,6 +71,7 @@ class CityModel(Model):
 
         self.fillTrafficLightsEdges()
         self.fillOtherEdges()
+        self.addAllDestiniesToGraph()
         print(self.graph)
 
     # Step function. Called every step of the simulation.
@@ -180,24 +181,27 @@ class CityModel(Model):
             ):
                 self.graph[position].append((position[0] - 1, position[1] - 1))
 
-        """
-        elif direction == "Up" and self.getPosAgent(
-            (position[0] + 1, position[0] + 1), Road
-        ):
-            self.graph[position].append((position[0] + 1, position[1] + 1))
-        elif direction == "Up" and self.getPosAgent(
-            (position[0] - 1, position[0] + 1), Road
-        ):
-            self.graph[position].append((position[0] - 1, position[1] + 1))
-        elif direction == "Down" and self.getPosAgent(
-            (position[0] + 1, position[0] - 1), Road
-        ):
-            self.graph[position].append((position[0] + 1, position[1] - 1))
-        elif direction == "Down" and self.getPosAgent(
-            (position[0] - 1, position[0] - 1), Road
-        ):
-            self.graph[position].append((position[0] - 1, position[1] - 1))
-        """
+        if position[0] != self.width - 1:
+            if direction == "Up" and self.getPosAgent(
+                (position[0] + 1, position[1] + 1), Road
+            ):
+                self.graph[position].append((position[0] + 1, position[1] + 1))
+
+            if direction == "Down" and self.getPosAgent(
+                (position[0] + 1, position[1] - 1), Road
+            ):
+                self.graph[position].append((position[0] + 1, position[1] - 1))
+
+        if position[0] != 0:
+            if direction == "Up" and self.getPosAgent(
+                (position[0] - 1, position[1] + 1), Road
+            ):
+                self.graph[position].append((position[0] - 1, position[1] + 1))
+
+            if direction == "Down" and self.getPosAgent(
+                (position[0] - 1, position[1] - 1), Road
+            ):
+                self.graph[position].append((position[0] - 1, position[1] - 1))
 
     def getPosAgent(self, position, object=Road):
         """Gets the road agent on a a position."""
@@ -219,7 +223,7 @@ class CityModel(Model):
     #### Spawn functions #######
     ############################
 
-    def findSpawnPostion(self):
+    def findSpawnPostions(self):
         """Finds a spawn location for a car agent."""
         possibleSpawnLocations = []
         for agent in self.grid.coord_iter():
@@ -229,11 +233,13 @@ class CityModel(Model):
                 if self.checkSpawnPosition(position, direction):
                     possibleSpawnLocations.append(position)
 
-        # Return a random spawn location
-        if len(possibleSpawnLocations) > 0:
-            return random.choice(possibleSpawnLocations)
-        else:
-            return False
+        # Return 4 unique random spawn locations
+        uniqueSpawnLocations = []
+        for i in range(4):
+            spawnLocation = random.choice(possibleSpawnLocations)
+            possibleSpawnLocations.remove(spawnLocation)
+            uniqueSpawnLocations.append(spawnLocation)
+        return uniqueSpawnLocations
 
     def checkSpawnPosition(self, position, direction):
         """Checks if a spawn position is valid."""
@@ -252,13 +258,38 @@ class CityModel(Model):
     #### Destiny functions #####
     ############################
 
+    def addAllDestiniesToGraph(self):
+        """Adds all destinies to the graph."""
+        for destiny in self.destinations:
+            self.addDestinyToGraph(destiny)
+
+    def addDestinyToGraph(self, destiny):
+        """Adds a destiny to the graph."""
+        # Make destiny reachable from veritical and horzontal road neighbors
+        neighborhood = self.grid.get_neighborhood(
+            destiny, moore=False, include_center=False
+        )
+        for neighbor in neighborhood:
+            # Check that neighbor is a road
+            if self.getPosAgent(neighbor, Road):
+                # Check that the road is horizontal or vertical to the destiny
+                if (
+                    neighbor[0] == destiny[0]
+                    or neighbor[1] == destiny[1]
+                    and neighbor != destiny
+                ):
+                    self.graph[neighbor].append(destiny)
+                    self.graph[destiny] = []
+
     def step(self):
         """Advance the model by one step."""
         if self.step_count % 10 == 0:
-            spawn_position = self.findSpawnPostion()
-            if spawn_position:
-                car = Car(f"c_{self.step_count}", self, (1, 10))
-                self.grid.place_agent(car, (0, 0))
+            spawn_positions = self.findSpawnPostions()
+
+            for i in range(4):
+                destiny = random.choice(self.destinations)
+                car = Car(f"c_{self.step_count}{i}", self, destiny)
+                self.grid.place_agent(car, spawn_positions[i])
                 self.schedule.add(car)
 
         self.step_count += 1
