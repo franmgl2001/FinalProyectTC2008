@@ -72,7 +72,6 @@ class CityModel(Model):
         self.fillTrafficLightsEdges()
         self.fillOtherEdges()
         self.addAllDestiniesToGraph()
-        print(self.graph)
 
     # Step function. Called every step of the simulation.
 
