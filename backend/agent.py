@@ -27,6 +27,7 @@ class Car(Agent):
         # Check that the agent in possible_steps are rooads and get the direction of the road
 
         path = aStar(self.model.graph, self.pos, self.goal)
+        print(self.pos, self.goal)
         if path == None:
             print(path)
             print(self.pos, self.goal)
@@ -38,6 +39,7 @@ class Car(Agent):
             return
 
         # Check if the next move is a traffic light
+        next_move = self.checkNextMoveIsNotCar(next_move)
         next_move = self.checkTrafficLight(next_move)
 
         # Move the agent to next_move
@@ -51,6 +53,13 @@ class Car(Agent):
         if agent:
             # Try to move to the other side of the road to avoid collision
             other_moves = self.model.graph[self.pos]
+            for move in other_moves:
+                if move != next_move and move not in self.model.destinations:
+                    agent = self.model.getPosAgent(move, Car)
+                    if not agent:
+                        self.model.grid.move_agent(self, move)
+                        return move
+            return self.pos
 
         return next_move
 
