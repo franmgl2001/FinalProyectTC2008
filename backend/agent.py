@@ -27,10 +27,9 @@ class Car(Agent):
         # Check that the agent in possible_steps are rooads and get the direction of the road
 
         path = aStar(self.model.graph, self.pos, self.goal)
-        print(self.pos, self.goal)
+
         if path == None:
-            print(path)
-            print(self.pos, self.goal)
+            return
         if len(path) > 2:
             next_move = path[1]
         else:
