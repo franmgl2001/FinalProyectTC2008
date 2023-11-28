@@ -87,7 +87,7 @@ public class AgentController : MonoBehaviour
 
     bool updated = false, started = false;
 
-    public GameObject agentPrefab, obstaclePrefab, floor;
+    public GameObject agentPrefab, obstaclePrefab;
     public int NAgents, width, height;
     public float timeToUpdate = 5.0f;
     private float timer, dt;
@@ -101,9 +101,6 @@ public class AgentController : MonoBehaviour
         currPositions = new Dictionary<string, Vector3>();
 
         agents = new Dictionary<string, GameObject>();
-
-        floor.transform.localScale = new Vector3((float)width/10, 1, (float)height/10);
-        floor.transform.localPosition = new Vector3((float)width/2-0.5f, 0, (float)height/2-0.5f);
         
         timer = timeToUpdate;
 
@@ -129,7 +126,9 @@ public class AgentController : MonoBehaviour
             // The positions are interpolated between the previous and current positions.
             foreach(var agent in currPositions)
             {
+                Debug.Log(agent.Key);
                 Vector3 currentPosition = agent.Value;
+                // Check 
                 Vector3 previousPosition = prevPositions[agent.Key];
 
                 Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
@@ -164,13 +163,8 @@ public class AgentController : MonoBehaviour
 
         It uses a WWWForm to send the data to the server, and then it uses a UnityWebRequest to send the form.
         */
-        WWWForm form = new WWWForm();
 
-        form.AddField("NAgents", NAgents.ToString());
-        form.AddField("width", width.ToString());
-        form.AddField("height", height.ToString());
-
-        UnityWebRequest www = UnityWebRequest.Post(serverUrl + sendConfigEndpoint, form);
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + sendConfigEndpoint);
         www.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
         yield return www.SendWebRequest();
