@@ -58,6 +58,7 @@ public class AgentController : MonoBehaviour
     Attributes:
         serverUrl (string): The url of the server.
         getAgentsEndpoint (string): The endpoint to get the agents data.
+        getObstaclesEndpoint (string): The endpoint to get the obstacles data.
         sendConfigEndpoint (string): The endpoint to send the configuration.
         updateEndpoint (string): The endpoint to update the simulation.
         agentsData (AgentsData): The data of the agents.
@@ -79,10 +80,10 @@ public class AgentController : MonoBehaviour
     */
     string serverUrl = "http://localhost:8585";
     string getAgentsEndpoint = "/getAgents";
-    string getTrafficLightsEndpoint = "/getTrafficLights";
+    string getObstaclesEndpoint = "/getObstacles";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
-    AgentsData agentsData, obstacleData, trafficLightsData;
+    AgentsData agentsData, obstacleData;
     Dictionary<string, GameObject> agents;
     Dictionary<string, GameObject> trafficLightsAgents;
     Dictionary<string, Vector3> prevPositions, currPositions;
@@ -126,28 +127,22 @@ public class AgentController : MonoBehaviour
 
             // Iterates over the agents to update their positions.
             // The positions are interpolated between the previous and current positions.
-            foreach(var agent in currPositions)
-            {
-                Vector3 currentPosition = agent.Value;
-                // Check 
-                Vector3 previousPosition = prevPositions[agent.Key];
-                /*
-                Debug.Log(agent.Key);
-                Vector3 currentPosition = agent.Value;
-                // Check 
-                Vector3 previousPosition = prevPositions[agent.Key];
+            // foreach(var agent in currPositions)
+            // {
+            //     Debug.Log(agent.Key);
+            //     Vector3 currentPosition = agent.Value;
+            //     // Check 
+            //     Vector3 previousPosition = prevPositions[agent.Key];
 
-                Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
-                Vector3 direction = currentPosition - interpolated;
+            //     Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
+            //     Vector3 direction = currentPosition - interpolated;
 
-                agents[agent.Key].transform.localPosition = interpolated;
-                if(direction != Vector3.zero) agents[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
-            }
-            */
-            }
+            //     agents[agent.Key].transform.localPosition = interpolated;
+            //     if(direction != Vector3.zero) agents[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
+            // }
+
             // float t = (timer / timeToUpdate);
             // dt = t * t * ( 3f - 2f*t);
-            
         }
     }
  
@@ -189,7 +184,9 @@ public class AgentController : MonoBehaviour
 
             // Once the configuration has been sent, it launches a coroutine to get the agents data.
             StartCoroutine(GetAgentsData());
+
             StartCoroutine(GetTrafficData());
+
         }
     }
 
@@ -210,21 +207,17 @@ public class AgentController : MonoBehaviour
 
             foreach(AgentData agent in agentsData.positions)
             {
-                
                 Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
-                    // Check that agent id exists in agents dictionary
 
-                    if(!agents.ContainsKey(agent.id))
+                    if(!started)
                     {
                         prevPositions[agent.id] = newAgentPosition;
                         agents[agent.id] = Instantiate(agentPrefab, newAgentPosition, Quaternion.identity);
-                        ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();
                     }
                     else
-                    {
+
                         ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();                        
-
-
+                     
                     }
             }
 
@@ -232,6 +225,7 @@ public class AgentController : MonoBehaviour
             if(!started) started = true;
         }
     }
+
 
     IEnumerator GetTrafficData() 
 {
@@ -269,7 +263,4 @@ public class AgentController : MonoBehaviour
 
 
 }
-
-
-
 
