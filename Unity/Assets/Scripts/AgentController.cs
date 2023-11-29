@@ -58,7 +58,6 @@ public class AgentController : MonoBehaviour
     Attributes:
         serverUrl (string): The url of the server.
         getAgentsEndpoint (string): The endpoint to get the agents data.
-        getObstaclesEndpoint (string): The endpoint to get the obstacles data.
         sendConfigEndpoint (string): The endpoint to send the configuration.
         updateEndpoint (string): The endpoint to update the simulation.
         agentsData (AgentsData): The data of the agents.
@@ -80,17 +79,17 @@ public class AgentController : MonoBehaviour
     */
     string serverUrl = "http://localhost:8585";
     string getAgentsEndpoint = "/getAgents";
-    string getObstaclesEndpoint = "/getObstacles";
+    string getTrafficLightsEndpoint = "/getTrafficLights";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
-    AgentsData agentsData, obstacleData;
+    AgentsData agentsData, obstacleData, trafficLightsData;
     Dictionary<string, GameObject> agents;
     Dictionary<string, GameObject> trafficLightsAgents;
     Dictionary<string, Vector3> prevPositions, currPositions;
 
     bool updated = false, started = false;
 
-    public GameObject agentPrefab, obstaclePrefab;
+    public GameObject agentPrefab, TrafficLightPrefab;
     public int NAgents, width, height;
     public float timeToUpdate = 5.0f;
     private float timer, dt;
@@ -104,11 +103,13 @@ public class AgentController : MonoBehaviour
         currPositions = new Dictionary<string, Vector3>();
 
         agents = new Dictionary<string, GameObject>();
+        trafficLightsAgents = new Dictionary<string, GameObject>();
         
         timer = timeToUpdate;
 
         // Launches a couroutine to send the configuration to the server.
         StartCoroutine(SendConfiguration());
+        StartCoroutine(GetTrafficData());
     }
 
     private void Update() 
@@ -127,22 +128,28 @@ public class AgentController : MonoBehaviour
 
             // Iterates over the agents to update their positions.
             // The positions are interpolated between the previous and current positions.
-            // foreach(var agent in currPositions)
-            // {
-            //     Debug.Log(agent.Key);
-            //     Vector3 currentPosition = agent.Value;
-            //     // Check 
-            //     Vector3 previousPosition = prevPositions[agent.Key];
+            foreach(var agent in currPositions)
+            {
+                Vector3 currentPosition = agent.Value;
+                // Check 
+                Vector3 previousPosition = prevPositions[agent.Key];
+                /*
+                Debug.Log(agent.Key);
+                Vector3 currentPosition = agent.Value;
+                // Check 
+                Vector3 previousPosition = prevPositions[agent.Key];
 
-            //     Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
-            //     Vector3 direction = currentPosition - interpolated;
+                Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
+                Vector3 direction = currentPosition - interpolated;
 
-            //     agents[agent.Key].transform.localPosition = interpolated;
-            //     if(direction != Vector3.zero) agents[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
-            // }
-
+                agents[agent.Key].transform.localPosition = interpolated;
+                if(direction != Vector3.zero) agents[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
+            }
+            */
+            }
             // float t = (timer / timeToUpdate);
             // dt = t * t * ( 3f - 2f*t);
+            
         }
     }
  
@@ -184,9 +191,7 @@ public class AgentController : MonoBehaviour
 
             // Once the configuration has been sent, it launches a coroutine to get the agents data.
             StartCoroutine(GetAgentsData());
-
             StartCoroutine(GetTrafficData());
-
         }
     }
 
@@ -207,17 +212,21 @@ public class AgentController : MonoBehaviour
 
             foreach(AgentData agent in agentsData.positions)
             {
+                
                 Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
+                    // Check that agent id exists in agents dictionary
 
-                    if(!started)
+                    if(!agents.ContainsKey(agent.id))
                     {
                         prevPositions[agent.id] = newAgentPosition;
                         agents[agent.id] = Instantiate(agentPrefab, newAgentPosition, Quaternion.identity);
+                        ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();
                     }
                     else
-
+                    {
                         ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();                        
-                     
+
+
                     }
             }
 
@@ -225,7 +234,6 @@ public class AgentController : MonoBehaviour
             if(!started) started = true;
         }
     }
-
 
     IEnumerator GetTrafficData() 
 {
@@ -243,19 +251,12 @@ public class AgentController : MonoBehaviour
         }
          foreach(AgentData agent in  trafficLightsData.positions)
             {
+                Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
+                Debug.Log(agent.id);
                 // Check if the agent exists in the trafficLightsAgents dictionary
                 if (!trafficLightsAgents.ContainsKey(agent.id))
-                {
-                    // If it doesn't exist, create a new agent
-                    Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
-                    //trafficLightsAgents[agent.id] = Instantiate(obstaclePrefab, newAgentPosition, Quaternion.identity);
-                }
-                else
-                {
-                    // If it exists, update the position of the agent
-                   // Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
-                    //trafficLightsAgents[agent.id].transform.localPosition = newAgentPosition;
-                }
+                    trafficLightsAgents[agent.id] = Instantiate(TrafficLightPrefab, newAgentPosition, Quaternion.identity);
+
                 
             }
 
@@ -263,4 +264,6 @@ public class AgentController : MonoBehaviour
 
 
 }
+
+
 
