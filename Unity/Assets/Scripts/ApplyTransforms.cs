@@ -83,11 +83,15 @@ public class ApplyTransforms : MonoBehaviour
     }
 
     void DoTransform(){
-        //float timeLerp = getT();
-        //Vector3 lerpPosition=PositionLerp(startPosition, endPosition, timeLerp);
-        Vector3 lerpPosition= endPosition;
-        float angleRadians = Mathf.Atan2(displacement.z, displacement.x);
-        float angle = angleRadians * Mathf.Rad2Deg-90;
+        float timeLerp = getT();
+        Vector3 lerpPosition=PositionLerp(startPosition, endPosition, timeLerp);
+        // Ge the rotation vector
+        Vector3 rotationVector = new Vector3(0,0,0);
+        rotationVector = endPosition - startPosition;
+        float angleRadians = Mathf.Atan2(rotationVector.z, rotationVector.x);
+        float angle = angleRadians * Mathf.Rad2Deg;
+
+        Matrix4x4 rotate = HW_Transforms.RotateMat(angle, rotationAxis);
         // Create a translation matrix
         Matrix4x4 move= HW_Transforms.TranslationMat(lerpPosition.x, lerpPosition.y, lerpPosition.z);
         // Create to move origin matrix
@@ -97,7 +101,7 @@ public class ApplyTransforms : MonoBehaviour
         // Create a rotation matrix
         Matrix4x4 scaleCar = HW_Transforms.ScaleMat(carScale, carScale, carScale);
         // Create a composite matrix
-        Matrix4x4 composite = move ;
+        Matrix4x4 composite = move * rotate;
 
         // Update new vertices
         for (int i=0; i<newVertices.Length; i++)
