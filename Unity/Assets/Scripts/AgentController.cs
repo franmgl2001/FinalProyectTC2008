@@ -24,7 +24,7 @@ public class AgentData
     public string id;
     public float x, y, z;
     public int state;
-
+    
     public AgentData(string id, int state, float x, float y, float z)
     {
         this.id = id;
@@ -198,7 +198,7 @@ public class AgentController : MonoBehaviour
     IEnumerator GetAgentsData() 
     {
         // The GetAgentsData method is used to get the agents data from the server.
-
+        
         UnityWebRequest www = UnityWebRequest.Get(serverUrl + getAgentsEndpoint);
         yield return www.SendWebRequest();
  
@@ -212,26 +212,30 @@ public class AgentController : MonoBehaviour
 
             foreach(AgentData agent in agentsData.positions)
             {
-                
-                Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
-                    // Check that agent id exists in agents dictionary
+                if (agent.id == "0") 
+                    {  
+                    
+                    Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
+                    Debug.Log("newAgentPosition: " + newAgentPosition);
+                        // Check that agent id exists in agents dictionary
 
-                    if(!agents.ContainsKey(agent.id))
-                    {
-                        prevPositions[agent.id] = newAgentPosition;
-                        agents[agent.id] = Instantiate(agentPrefab, Vector3.zero, Quaternion.identity);
-                        ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();
-                        applyTransforms.getPosition(newAgentPosition, true);
-                        //applyTransforms.endPosition = newAgentPosition;
-                    }
-                    else
-                    {
-                        ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();  
-                        applyTransforms.getPosition(newAgentPosition, true);
-                           
-                        //applyTransforms.endPosition = newAgentPosition;                   
+                        if(!agents.ContainsKey(agent.id))
+                        {
+                            prevPositions[agent.id] = newAgentPosition;
+                            agents[agent.id] = Instantiate(agentPrefab, Vector3.zero, Quaternion.identity);
+                            ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();
+                            applyTransforms.getPosition(newAgentPosition, true);
+                            //applyTransforms.endPosition = newAgentPosition;
+                        }
+                        else
+                        {
+                            ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();  
+                            applyTransforms.getPosition(newAgentPosition, false);
+                            
+                            //applyTransforms.endPosition = newAgentPosition;                   
 
 
+                        }
                     }
             }
 
