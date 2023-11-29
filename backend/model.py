@@ -284,7 +284,7 @@ class CityModel(Model):
 
     def step(self):
         """Advance the model by one step."""
-        if self.step_count % 10 == 0:
+        if self.step_count % 3 == 0:
             spawn_positions = self.findSpawnPostions()
 
             for i in range(4):

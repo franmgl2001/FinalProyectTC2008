@@ -200,4 +200,11 @@ public class ApplyTransforms : MonoBehaviour
         }
     }
 
+    public void removeWheels(){
+        for (int i = 0; i < wheels.Length; i++)
+        {
+            Destroy(wheels[i]);
+        }
+    }
+
 }

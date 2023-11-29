@@ -86,6 +86,7 @@ public class AgentController : MonoBehaviour
     Dictionary<string, GameObject> agents;
     Dictionary<string, GameObject> trafficLightsAgents;
     Dictionary<string, Vector3> prevPositions, currPositions;
+    List<string> keysToRemove = new List<string>();
 
     bool updated = false, started = false;
 
@@ -125,30 +126,6 @@ public class AgentController : MonoBehaviour
         {
             timer -= Time.deltaTime;
             dt = 1.0f - (timer / timeToUpdate);
-
-            // Iterates over the agents to update their positions.
-            // The positions are interpolated between the previous and current positions.
-            foreach(var agent in currPositions)
-            {
-                Vector3 currentPosition = agent.Value;
-                // Check 
-                Vector3 previousPosition = prevPositions[agent.Key];
-                /*
-                Debug.Log(agent.Key);
-                Vector3 currentPosition = agent.Value;
-                // Check 
-                Vector3 previousPosition = prevPositions[agent.Key];
-
-                Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
-                Vector3 direction = currentPosition - interpolated;
-
-                agents[agent.Key].transform.localPosition = interpolated;
-                if(direction != Vector3.zero) agents[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
-            }
-            */
-            }
-            // float t = (timer / timeToUpdate);
-            // dt = t * t * ( 3f - 2f*t);
             
         }
     }
@@ -230,12 +207,29 @@ public class AgentController : MonoBehaviour
                         {
                             ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();  
                             applyTransforms.getPosition(newAgentPosition, false);
-                            
                             //applyTransforms.endPosition = newAgentPosition;                   
-
-
                         }
             }
+
+            foreach (string key in agents.Keys)
+            {
+                if (!agentsData.positions.Exists(agent => agent.id == key))
+                {
+                    Debug.Log("Destroying agent: " + key);
+                    ApplyTransforms applyTransforms = agents[key].GetComponent<ApplyTransforms>();  
+                    applyTransforms.removeWheels();
+                    Destroy(agents[key]);
+                    keysToRemove.Add(key);
+
+                }
+            }
+
+            foreach (string key in keysToRemove)
+            {
+                agents.Remove(key);
+            }
+
+            // Find agents that are not in the agentsData.positions list and destroy them.
 
             updated = true;
             if(!started) started = true;
