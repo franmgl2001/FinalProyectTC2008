@@ -23,10 +23,12 @@ public class AgentData
     */
     public string id;
     public float x, y, z;
+    public int state;
 
-    public AgentData(string id, float x, float y, float z)
+    public AgentData(string id, int state, float x, float y, float z)
     {
         this.id = id;
+        this.state = state;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -82,6 +84,7 @@ public class AgentController : MonoBehaviour
     string updateEndpoint = "/update";
     AgentsData agentsData, obstacleData, trafficLightsData;
     Dictionary<string, GameObject> agents;
+    Dictionary<string, GameObject> trafficLightsAgents;
     Dictionary<string, Vector3> prevPositions, currPositions;
 
     bool updated = false, started = false;
@@ -158,6 +161,7 @@ public class AgentController : MonoBehaviour
         else 
         {
             StartCoroutine(GetAgentsData());
+            StartCoroutine(GetTrafficData());
         }
     }
 
@@ -185,6 +189,7 @@ public class AgentController : MonoBehaviour
 
             // Once the configuration has been sent, it launches a coroutine to get the agents data.
             StartCoroutine(GetAgentsData());
+            StartCoroutine(GetTrafficData());
         }
     }
 
@@ -217,10 +222,7 @@ public class AgentController : MonoBehaviour
                     }
                     else
                     {
-                        ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();
-                        applyTransforms.displacement = newAgentPosition - applyTransforms.displacement;
-                        applyTransforms.TeleportTo(newAgentPosition);
-                        
+                        ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();                        
 
 
                     }
@@ -231,14 +233,11 @@ public class AgentController : MonoBehaviour
         }
     }
 
-}
-
-/*
-
-IEnumerator GetTrafficData() 
+    IEnumerator GetTrafficData() 
 {
         UnityWebRequest www = UnityWebRequest.Get(serverUrl + getTrafficLightsEndpoint);
         yield return www.SendWebRequest();
+        
  
         if (www.result != UnityWebRequest.Result.Success)
             Debug.Log(www.error);
@@ -246,30 +245,31 @@ IEnumerator GetTrafficData()
         {
             // Once the data has been received, it is stored in the agentsData variable.
             // Then, it iterates over the agentsData.positions list to update the agents positions.
-            agentsData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
+            trafficLightsData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
         }
-
-        foreach(AgentData agent in agentsData.positions)
-        {
-            Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
-            // Check that agent id exists in agents dictionary
-
-            if(!agents.ContainsKey(agent.id))
+         foreach(AgentData agent in  trafficLightsData.positions)
             {
-                prevPositions[agent.id] = newAgentPosition;
-                agents[agent.id] = Instantiate(agentPrefab, newAgentPosition, Quaternion.identity);
+                // Check if the agent exists in the trafficLightsAgents dictionary
+                if (!trafficLightsAgents.ContainsKey(agent.id))
+                {
+                    // If it doesn't exist, create a new agent
+                    Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
+                    //trafficLightsAgents[agent.id] = Instantiate(obstaclePrefab, newAgentPosition, Quaternion.identity);
+                }
+                else
+                {
+                    // If it exists, update the position of the agent
+                   // Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
+                    //trafficLightsAgents[agent.id].transform.localPosition = newAgentPosition;
+                }
+                
             }
-            else
-            {
-                Debug.Log("Agent " + agent.id + " already exists");
-                Vector3 currentPosition = new Vector3();
-                if(currPositions.TryGetValue(agent.id, out currentPosition))
-                    prevPositions[agent.id] = currentPosition;
-                currPositions[agent.id] = newAgentPosition;
 
-                Debug.Log("Agent " + agent.id + " position: " + newAgentPosition);
-            }
-        }
+}
 
 
-}*/
+}
+
+
+
+
