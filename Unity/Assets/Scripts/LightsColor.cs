@@ -7,6 +7,7 @@ public class LightsColor : MonoBehaviour
     public Color greenLightColor = Color.green; 
     public Color redLightColor = Color.red;   
     public float changeInterval = 5.0f;
+    public int state = 0;
 
     private MeshRenderer meshRenderer;
     private Light trafficLight;
@@ -38,10 +39,7 @@ public class LightsColor : MonoBehaviour
 
     void Update()
     {
-        timer -= Time.deltaTime;
-        if (timer <= 0)
-        {
-            if (isGreen)
+        if (state == 0)
             {
                 meshRenderer.material = redLightMaterial;
                 trafficLight.color = redLightColor;
@@ -51,8 +49,6 @@ public class LightsColor : MonoBehaviour
                 meshRenderer.material = greenLightMaterial;
                 trafficLight.color = greenLightColor;
             }
-            isGreen = !isGreen;
-            timer = changeInterval;
         }
     }
-}
+
