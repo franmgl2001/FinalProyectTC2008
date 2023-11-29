@@ -111,10 +111,13 @@ public class ApplyTransforms : MonoBehaviour
             newVertices[i] = composite * scaleCar * temp;
         }
         
-        // Update the vertices of the car and recalculate normals
-        mesh.vertices = newVertices;
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
+        // Update the vertices of the car and recalculate normals\
+        if (startPosition!=endPosition){
+            mesh.vertices = newVertices;
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+        }
+        
         
         // Now do the same for the wheels
         // Create a rotation matrix for the wheels
@@ -139,9 +142,11 @@ public class ApplyTransforms : MonoBehaviour
                 newVerticesWheels[i][j] = composite * wheelPositions[i] * rotateWheels * scaleMatrix * temp;
             }
              // Update the vertices of the wheels and recalculate normals
-            meshWheels[i].vertices = newVerticesWheels[i];
-            meshWheels[i].RecalculateNormals();
-            meshWheels[i].RecalculateBounds();
+            if (startPosition!=endPosition){
+                meshWheels[i].vertices = newVerticesWheels[i];
+                meshWheels[i].RecalculateNormals();
+                meshWheels[i].RecalculateBounds();
+            }
         }
 
         /*
@@ -192,6 +197,13 @@ public class ApplyTransforms : MonoBehaviour
         currentTime=0;
         if (isStart){
             startPosition=position;
+        }
+    }
+
+    public void removeWheels(){
+        for (int i = 0; i < wheels.Length; i++)
+        {
+            Destroy(wheels[i]);
         }
     }
 
