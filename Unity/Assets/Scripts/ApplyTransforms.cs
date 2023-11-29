@@ -9,8 +9,8 @@ public class ApplyTransforms : MonoBehaviour
     [SerializeField] AXIS rotationAxis; // General Rotation axis
     [SerializeField] GameObject wheel1; // Wheel prefab
     AXIS wheelAxis = AXIS.Z; // Wheel rotation axis
-    float wheelAngle = -30; // Wheel rotation angle
-    float scaleFactor = 0.3f; // Scaling factor
+    float wheelAngle = 30; // Wheel rotation angle
+    float scaleFactor = 0.25f; // Scaling factor
     
 
     // Declare variables for the the car (Meshes and Vertices)
@@ -28,7 +28,7 @@ public class ApplyTransforms : MonoBehaviour
     public Vector3 endPosition;
     bool isStart=true;
     float currentTime=0;
-    float motionTime=5;
+    float motionTime=1;
     float T=0;
     float carScale=0.3f;
 
@@ -83,8 +83,9 @@ public class ApplyTransforms : MonoBehaviour
     }
 
     void DoTransform(){
-        Vector3 lerpPosition=PositionLerp(startPosition, endPosition, T);
-        Debug.Log("lerpPosition: " + lerpPosition);
+        //float timeLerp = getT();
+        //Vector3 lerpPosition=PositionLerp(startPosition, endPosition, timeLerp);
+        Vector3 lerpPosition= endPosition;
         float angleRadians = Mathf.Atan2(displacement.z, displacement.x);
         float angle = angleRadians * Mathf.Rad2Deg-90;
         // Create a translation matrix
@@ -118,10 +119,10 @@ public class ApplyTransforms : MonoBehaviour
         Matrix4x4 scaleMatrix = HW_Transforms.ScaleMat(scaleFactor, scaleFactor, scaleFactor);
         // Create a matrix for the position of the wheels
         Matrix4x4[] wheelPositions = {
-            HW_Transforms.TranslationMat(0.757f, 0.367f, -1.23f),
-            HW_Transforms.TranslationMat(-0.757f, 0.367f, -1.23f),
-            HW_Transforms.TranslationMat(0.757f, 0.367f, 1.23f),
-            HW_Transforms.TranslationMat(-0.757f, 0.367f, 1.23f)
+            HW_Transforms.TranslationMat(0.18f, 0.05f, -0.13f),
+            HW_Transforms.TranslationMat(-0.20f,  0.05f, -0.13f),
+            HW_Transforms.TranslationMat(-0.20f,  0.05f, 0.13f),
+            HW_Transforms.TranslationMat(0.18f,  0.05f, 0.13f)
         };
 
         

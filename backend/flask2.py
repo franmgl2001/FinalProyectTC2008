@@ -45,6 +45,7 @@ def updateModel():
     if request.method == "GET":
         cityModel.step()
         currentStep += 1
+        print(currentStep, "Update Number")
         return jsonify(
             {
                 "message": f"Model updated to step {currentStep}.",
@@ -69,10 +70,6 @@ def getTraffic_Lights():
             for agent in agents
             if isinstance(agent, Traffic_Light)
         ]
-
-        cityModel.step()
-        currentStep += 1
-        print(traffic_light_positions)
         return jsonify({"positions": traffic_light_positions})
 
 

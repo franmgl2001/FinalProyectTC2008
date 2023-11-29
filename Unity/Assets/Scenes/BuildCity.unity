@@ -343,7 +343,7 @@ MonoBehaviour:
   NAgents: 10
   width: 28
   height: 28
-  timeToUpdate: 2
+  timeToUpdate: 1
 --- !u!4 &1452279899
 Transform:
   m_ObjectHideFlags: 0
@@ -388,7 +388,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c7376b41e8cfe8ff91fb865d4a420f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  layout: {fileID: 4900000, guid: 1bd49f2e04cdbec48bb774669bd2140d, type: 3}
+  layout: {fileID: 4900000, guid: f280cc86a25f745349cbbac624996972, type: 3}
   roadPrefab: {fileID: 3240343348373693069, guid: 646fc54ff3078ce94bbdbd0f0d4c4a05, type: 3}
   buildingPrefab:
   - {fileID: 8560732082144194186, guid: c2ad1026b7b984510b5731a4b20e26b1, type: 3}
