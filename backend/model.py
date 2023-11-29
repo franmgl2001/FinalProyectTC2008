@@ -49,7 +49,7 @@ class CityModel(Model):
 
                     elif col in ["S", "s"]:
                         agent = Traffic_Light(
-                            r*self.width+c,
+                            f"S_{r*self.width+c}",
                             self,
                             False if col == "S" else True,
                             int(dataDictionary[col]),

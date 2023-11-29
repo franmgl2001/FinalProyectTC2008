@@ -219,12 +219,17 @@ public class AgentController : MonoBehaviour
                     if(!agents.ContainsKey(agent.id))
                     {
                         prevPositions[agent.id] = newAgentPosition;
-                        agents[agent.id] = Instantiate(agentPrefab, newAgentPosition, Quaternion.identity);
+                        agents[agent.id] = Instantiate(agentPrefab, Vector3.zero, Quaternion.identity);
                         ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();
+                        applyTransforms.getPosition(newAgentPosition, true);
+                        //applyTransforms.endPosition = newAgentPosition;
                     }
                     else
                     {
-                        ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();                        
+                        ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();  
+                        applyTransforms.getPosition(newAgentPosition, true);
+                           
+                        //applyTransforms.endPosition = newAgentPosition;                   
 
 
                     }
@@ -252,7 +257,6 @@ public class AgentController : MonoBehaviour
          foreach(AgentData agent in  trafficLightsData.positions)
             {
                 Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
-                Debug.Log(agent.id);
                 // Check if the agent exists in the trafficLightsAgents dictionary
                 if (!trafficLightsAgents.ContainsKey(agent.id))
                 {

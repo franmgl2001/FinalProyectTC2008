@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657838, g: 0.49641228, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -339,7 +339,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentPrefab: {fileID: 8863603950383546282, guid: e17df80b28b934d2c91d10e096cf0527, type: 3}
-  obstaclePrefab: {fileID: 961990229689801968, guid: 0870e23a47df89e468e8af19c065fce0, type: 3}
+  TrafficLightPrefab: {fileID: 4300990165740335302, guid: f1f5c917bfe414a04be219c62c228644, type: 3}
   NAgents: 10
   width: 28
   height: 28
