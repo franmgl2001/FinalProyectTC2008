@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657838, g: 0.49641228, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -309,6 +309,56 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1452279897
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1452279899}
+  - component: {fileID: 1452279898}
+  m_Layer: 0
+  m_Name: AgentController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1452279898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1452279897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 983bc179e80f15347a79dd7b044746e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentPrefab: {fileID: 8863603950383546282, guid: e17df80b28b934d2c91d10e096cf0527, type: 3}
+  obstaclePrefab: {fileID: 961990229689801968, guid: 0870e23a47df89e468e8af19c065fce0, type: 3}
+  NAgents: 10
+  width: 28
+  height: 28
+  timeToUpdate: 2
+--- !u!4 &1452279899
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1452279897}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1457529882
 GameObject:
   m_ObjectHideFlags: 0
@@ -344,7 +394,7 @@ MonoBehaviour:
   - {fileID: 8560732082144194186, guid: c2ad1026b7b984510b5731a4b20e26b1, type: 3}
   - {fileID: 5184673041778217432, guid: d7b22ea3e9bde4882bcb2967a52ae584, type: 3}
   - {fileID: 33555395739272859, guid: 10a584233fb38a918af771ddce837268, type: 3}
-  semaphorePrefab: {fileID: 8102729382312259521, guid: ec03db3fda9c46458bf4fb4f61cc11bd, type: 3}
+  semaphorePrefab: {fileID: 4300990165740335302, guid: f1f5c917bfe414a04be219c62c228644, type: 3}
   tileSize: 1
 --- !u!4 &1457529884
 Transform:
@@ -432,3 +482,4 @@ SceneRoots:
   - {fileID: 136675314}
   - {fileID: 395527431}
   - {fileID: 1457529884}
+  - {fileID: 1452279899}
