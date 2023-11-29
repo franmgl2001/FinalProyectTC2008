@@ -102,6 +102,7 @@ class Traffic_Light(Agent):
             state: Whether the traffic light is green or red
             timeToChange: After how many step should the traffic light change color 
         """
+        self.unique_id = unique_id
         self.state = state
         self.timeToChange = timeToChange
 
