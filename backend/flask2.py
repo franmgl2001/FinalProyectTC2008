@@ -53,12 +53,12 @@ def updateModel():
         )
 
 
-@app.route("/traffic_light", methods=["GET"])
+@app.route("/getTrafficLights", methods=["GET"])
 def getTraffic_Lights():
     global currentStep, cityModel
     if request.method == "GET":
         traffic_light_positions = [
-            {"id": (x, z), "state": agent.state, "x": x, "y": 1, "z": z}
+            {"id": (x, z), "state": agent.state, "x": x, "y": 0, "z": z}
             for agents, (x, z) in cityModel.grid.coord_iter()
             for agent in agents
             if isinstance(agent, Traffic_Light)
