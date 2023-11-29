@@ -255,7 +255,15 @@ public class AgentController : MonoBehaviour
                 Debug.Log(agent.id);
                 // Check if the agent exists in the trafficLightsAgents dictionary
                 if (!trafficLightsAgents.ContainsKey(agent.id))
+                {
                     trafficLightsAgents[agent.id] = Instantiate(TrafficLightPrefab, newAgentPosition, Quaternion.identity);
+                    trafficLightsAgents[agent.id].GetComponent<LightsColor>().state = agent.state;
+                }
+                else
+                {
+                    trafficLightsAgents[agent.id].GetComponent<LightsColor>().state = agent.state;
+                }
+                    
 
                 
             }
