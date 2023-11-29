@@ -5,12 +5,13 @@ using UnityEngine;
 public class ApplyTransforms : MonoBehaviour
 {
     // Declare general Movment variables
-    public Vector3 displacement; // General displacement vector
+    public Vector3 displacement = new Vector3 (0,0,0); // General displacement vector
     [SerializeField] AXIS rotationAxis; // General Rotation axis
     [SerializeField] GameObject wheel1; // Wheel prefab
-    AXIS wheelAxis = AXIS.X; // Wheel rotation axis
+    AXIS wheelAxis = AXIS.Z; // Wheel rotation axis
     float wheelAngle = -30; // Wheel rotation angle
     float scaleFactor = 0.3f; // Scaling factor
+    
 
     // Declare variables for the the car (Meshes and Vertices)
     Mesh mesh;
@@ -22,8 +23,15 @@ public class ApplyTransforms : MonoBehaviour
     Vector3[][] newVerticesWheels = new Vector3[4][];
     GameObject[] wheels = new GameObject[4];
 
+    // Lerp variables
     Vector3 startPosition;
-    Vector3 endPosition;
+    public Vector3 endPosition;
+    bool isStart=true;
+    float currentTime=0;
+    float motionTime=5;
+    float T=0;
+    float carScale=0.3f;
+
     
     void Start()
     {
@@ -75,30 +83,33 @@ public class ApplyTransforms : MonoBehaviour
     }
 
     void DoTransform(){
+        Vector3 lerpPosition=PositionLerp(startPosition, endPosition, T);
+        Debug.Log("lerpPosition: " + lerpPosition);
         float angleRadians = Mathf.Atan2(displacement.z, displacement.x);
         float angle = angleRadians * Mathf.Rad2Deg-90;
         // Create a translation matrix
-        Matrix4x4 move= HW_Transforms.TranslationMat(displacement.x *Time.time , displacement.y *Time.time, displacement.z *Time.time);
+        Matrix4x4 move= HW_Transforms.TranslationMat(lerpPosition.x, lerpPosition.y, lerpPosition.z);
         // Create to move origin matrix
         Matrix4x4 moveOrigin= HW_Transforms.TranslationMat(-displacement.x, -displacement.y, -displacement.z);
         //Create a move to move Object again to the origin
         Matrix4x4 moveObject= HW_Transforms.TranslationMat(displacement.x, displacement.y, displacement.z);
         // Create a rotation matrix
-        Matrix4x4 rotate = HW_Transforms.RotateMat(angle, rotationAxis );
+        Matrix4x4 scaleCar = HW_Transforms.ScaleMat(carScale, carScale, carScale);
         // Create a composite matrix
-        Matrix4x4 composite =rotate* move;
+        Matrix4x4 composite = move ;
 
         // Update new vertices
         for (int i=0; i<newVertices.Length; i++)
         {
             Vector4 temp = new Vector4(baseVertices[i].x, baseVertices[i].y, baseVertices[i].z, 1);
 
-            newVertices[i] = composite * temp;
+            newVertices[i] = composite * scaleCar * temp;
         }
         
         // Update the vertices of the car and recalculate normals
         mesh.vertices = newVertices;
         mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
         
         // Now do the same for the wheels
         // Create a rotation matrix for the wheels
@@ -125,6 +136,7 @@ public class ApplyTransforms : MonoBehaviour
              // Update the vertices of the wheels and recalculate normals
             meshWheels[i].vertices = newVerticesWheels[i];
             meshWheels[i].RecalculateNormals();
+            meshWheels[i].RecalculateBounds();
         }
 
         /*
@@ -148,11 +160,34 @@ public class ApplyTransforms : MonoBehaviour
         mesh1.vertices = newVertices1;
         mesh1.RecalculateNormals();
         */
+
     
     }
 
-    public void TeleportTo(Vector3 newPosition)
+    Vector3 PositionLerp(Vector3 start, Vector3 end, float time)
     {
-        Debug.Log("TeleportTo");
+        return start + (end - start) * time;
     }
+
+    float getT(){
+        currentTime+=Time.deltaTime;
+        T=currentTime/motionTime;
+        if(T>1){
+            T=1;
+        }
+        return T;
+    }
+
+    //Como se hace get position? Que tiene que ver con el api?
+    public void getPosition(Vector3 position, bool isStart){
+        //swap variables de donde estas y a donde vas.
+        startPosition=endPosition;
+        endPosition=position;
+        //cuanto tiempo ha pasado desde que empezaste a moverte
+        currentTime=0;
+        if (isStart){
+            startPosition=position;
+        }
+    }
+
 }
