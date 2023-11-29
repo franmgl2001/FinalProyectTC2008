@@ -212,8 +212,7 @@ public class AgentController : MonoBehaviour
 
             foreach(AgentData agent in agentsData.positions)
             {
-                if (agent.id == "0") 
-                    {  
+ 
                     
                     Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
                     Debug.Log("newAgentPosition: " + newAgentPosition);
@@ -236,7 +235,6 @@ public class AgentController : MonoBehaviour
 
 
                         }
-                    }
             }
 
             updated = true;
