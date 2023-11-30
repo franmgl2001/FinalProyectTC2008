@@ -38,16 +38,17 @@ class Car(Agent):
         else:
             self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
+            self.model.destroyed += 1
             return
 
         # Check if the next move is a car
         next_move = self.checkNextMoveIsNotCar(next_move)
 
         # Check if the next move is a traffic light
-        next_move = self.checkTrafficLight(next_move)
-
-        # Check for any collisions
         next_move = self.avoid_collision(next_move)
+
+        # Check if the next move is a traffic light
+        next_move = self.checkTrafficLight(next_move)
 
         # Move the agent to next_move
         if self.first_move:
@@ -204,17 +205,81 @@ class Traffic_Light(Agent):
         """
         Cambia el estado del semáforo en base al tráfico detectado.
         """
-        traffic_count = self.model.count_traffic_around_light(self.pos)
+        # Find id on self.model.traffic_lights_ids
 
         # Puedes ajustar estos valores según necesites
-        traffic_threshold_for_change = 4  # cambiar si hay 3 o más coches
-        time_threshold_for_change = 10  # cambiar cada 10 pasos
+        time_threshold_for_change = 5  # cambiar cada 10 pasos
 
-        if (
-            traffic_count >= traffic_threshold_for_change
-            or self.model.schedule.steps % time_threshold_for_change == 0
-        ):
+        if self.model.schedule.steps % time_threshold_for_change == 0:
             self.state = not self.state
+
+    def check_cooldown(self, set_id, other_id):
+        """
+        Verifica si el semáforo está en cooldown.
+        """
+        return (
+            self.model.traffic_lights_sets[set_id]["cooldown"]
+            and self.model.traffic_lights_sets[other_id]["cooldown"]
+        )
+
+    def count_amount_of_cars(self, set_id, direction):
+        """
+        Cuenta la cantidad de coches en la dirección del semáforo.
+        """
+        # Find the road in the direction of the traffic light
+        positions = self.model.traffic_lights_sets[set_id]["traffic_light"]
+        car_count = 0
+
+        # Move according to the direction of the traffic light
+        positions = self.move_positions(positions, direction)
+        while self.check_positions_are_valid(positions):
+            positions = self.move_positions(positions, direction)
+            car_count += 1
+        return car_count
+
+    def move_positions(self, positions, direction):
+        if direction == "Up":
+            positions = [(pos[0], pos[1] - 1) for pos in positions]
+        elif direction == "Down":
+            positions = [(pos[0], pos[1] + 1) for pos in positions]
+        elif direction == "Left":
+            positions = [(pos[0] + 1, pos[1]) for pos in positions]
+        elif direction == "Right":
+            positions = [(pos[0] - 1, pos[1]) for pos in positions]
+        return positions
+
+    def check_positions_are_valid(self, positions):
+        """
+        This function checks if the positions are valid
+        """
+        for pos in positions:
+            if not self.check_position_on_bounds(pos):
+                return False
+            if not self.check_if_car_in_position(pos):
+                return False
+        return True
+
+    def check_position_on_bounds(self, pos):
+        """
+        This function checks if the position is on the bounds of the grid
+        """
+        if (
+            pos[0] >= 0
+            or pos[0] <= self.model.grid.width - 1
+            or pos[1] >= 0
+            or pos[1] <= self.model.grid.height - 1
+        ):
+            return True
+        return False
+
+    def check_if_car_in_position(self, pos):
+        """
+        This function checks if there is a car in the position
+        """
+        agent = self.model.getPosAgent(pos, Car)
+        if agent:
+            return True
+        return False
 
 
 class Destination(Agent):

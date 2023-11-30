@@ -15,7 +15,7 @@ cityModel = None
 currentStep = 0
 
 app = Flask("Traffic example")
-url = "http://52.1.3.19:8585/api/validate_attempt"
+url = "http://52.1.3.19:8585/api/attempts"
 
 
 @app.route("/init", methods=["GET", "POST"])
@@ -48,9 +48,11 @@ def updateModel():
     global currentStep, cityModel
     if request.method == "GET":
         cityModel.step()
-        currentStep += 1
-        # sendRequest()
 
+        if currentStep % 100 == 0:
+            sendRequest()
+        print(currentStep)
+        currentStep += 1
         return jsonify(
             {
                 "message": f"Model updated to step {currentStep}.",
@@ -80,14 +82,7 @@ def getTraffic_Lights():
 
 
 def sendRequest():
-    cars = len(
-        [
-            {"id": agent.unique_id, "x": x, "y": 0, "z": z}
-            for agents, (x, z) in cityModel.grid.coord_iter()
-            for agent in agents
-            if isinstance(agent, Car)
-        ]
-    )
+    cars = cityModel.destroyed
     # Send data to the server
     data = {"year": 2023, "classroom": 302, "name": "Equipo 7", "num_cars": cars}
     headers = {"Content-type": "application/json"}
