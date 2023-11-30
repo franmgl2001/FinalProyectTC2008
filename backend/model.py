@@ -13,6 +13,26 @@ class CityModel(Model):
     Args:
         N: Number of agents in the simulation
     """
+    def count_traffic_around_light(self, traffic_light_pos):
+        """
+        Cuenta los agentes Car alrededor de un semáforo.
+
+        Args:
+            traffic_light_pos (tuple): La posición del semáforo.
+
+        Returns:
+            int: Número de agentes Car cerca del semáforo.
+        """
+        neighborhood = self.grid.get_neighborhood(
+            traffic_light_pos, moore=True, include_center=False
+        )
+        car_count = 0
+        for pos in neighborhood:
+            agents = self.grid.get_cell_list_contents([pos])
+            car_count += sum(isinstance(agent, Car) for agent in agents)
+
+        return car_count
+
 
     def __init__(self):
         # Load the map dictionary. The dictionary maps the characters in the map file to the corresponding agent.
@@ -296,3 +316,4 @@ class CityModel(Model):
 
         self.step_count += 1
         self.schedule.step()
+
