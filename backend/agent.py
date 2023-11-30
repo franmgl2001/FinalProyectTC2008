@@ -40,6 +40,7 @@ class Car(Agent):
         # Check if the next move is a traffic light
         next_move = self.checkNextMoveIsNotCar(next_move)
         next_move = self.checkTrafficLight(next_move)
+        # self.check_sides_for_cars()
 
         # Move the agent to next_move
         self.model.grid.move_agent(self, next_move)
@@ -48,12 +49,14 @@ class Car(Agent):
         """
         Checks if the next move is a car
         """
+        # Check if the next move is a car
         agent = self.model.getPosAgent(next_move, Car)
         if agent:
             # Try to move to the other side of the road to avoid collision
             other_moves = self.model.graph[self.pos]
             for move in other_moves:
                 if move != next_move and move not in self.model.destinations:
+                    # Check again that the next move is not a car
                     agent = self.model.getPosAgent(move, Car)
                     if not agent:
                         self.model.grid.move_agent(self, move)
@@ -61,6 +64,57 @@ class Car(Agent):
             return self.pos
 
         return next_move
+
+    def check_sides_for_cars(self):
+        """
+        This function checks if there are cars in the sides of the car
+        """
+        # Check that position is on the bounds of the grid
+        if not self.check_position_on_bounds(self.pos):
+            return True
+        road = self.model.getPosAgent(self.pos, Road)
+        # Traffic light edge case
+        if road is None:
+            return False
+        if road.direction == "Up" or road.direction == "Down":
+            # Check the right side
+            right = (self.pos[0] + 1, self.pos[1])
+            agent = self.model.getPosAgent(right, Car)
+            if agent:
+                self.model.grid.move_agent(agent, self.pos)
+                return True
+            # Check the left side
+            left = (self.pos[0] - 1, self.pos[1])
+            agent = self.model.getPosAgent(left, Car)
+            if agent:
+                self.model.grid.move_agent(agent, self.pos)
+                return True
+        else:
+            # Check the up side
+            up = (self.pos[0], self.pos[1] + 1)
+            agent = self.model.getPosAgent(up, Car)
+            if agent:
+                self.model.grid.move_agent(agent, self.pos)
+                return True
+            # Check the down side
+            down = (self.pos[0], self.pos[1] - 1)
+            agent = self.model.getPosAgent(down, Car)
+            if agent:
+                self.model.grid.move_agent(agent, self.pos)
+                return True
+
+    def check_position_on_bounds(self, pos):
+        """
+        This function checks if the position is on the bounds of the grid
+        """
+        if (
+            pos[0] >= 0
+            or pos[0] <= self.model.grid.width - 1
+            or pos[1] >= 0
+            or pos[1] <= self.model.grid.height - 1
+        ):
+            return True
+        return False
 
     ############################
     ## Trafic light functions###
