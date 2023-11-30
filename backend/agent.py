@@ -2,6 +2,7 @@ from mesa import Agent
 from aStar import aStar
 import random
 
+
 class Car(Agent):
     """
     Agent that moves randomly.
@@ -39,6 +40,7 @@ class Car(Agent):
 
         # Check if the next move is a traffic light
         next_move = self.checkNextMoveIsNotCar(next_move)
+        next_move = self.checkTrafficLight(next_move)
 
         # Move the agent to next_move
         self.model.grid.move_agent(self, next_move)
@@ -166,12 +168,15 @@ class Traffic_Light(Agent):
         Cambia el estado del semáforo en base al tráfico detectado.
         """
         traffic_count = self.model.count_traffic_around_light(self.pos)
-        
+
         # Puedes ajustar estos valores según necesites
         traffic_threshold_for_change = 4  # cambiar si hay 3 o más coches
         time_threshold_for_change = 10  # cambiar cada 10 pasos
-        
-        if traffic_count >= traffic_threshold_for_change or self.model.schedule.steps % time_threshold_for_change == 0:
+
+        if (
+            traffic_count >= traffic_threshold_for_change
+            or self.model.schedule.steps % time_threshold_for_change == 0
+        ):
             self.state = not self.state
 
 

@@ -13,6 +13,7 @@ class CityModel(Model):
     Args:
         N: Number of agents in the simulation
     """
+
     def count_traffic_around_light(self, traffic_light_pos):
         """
         Cuenta los agentes Car alrededor de un semáforo.
@@ -32,7 +33,6 @@ class CityModel(Model):
             car_count += sum(isinstance(agent, Car) for agent in agents)
 
         return car_count
-
 
     def __init__(self):
         # Load the map dictionary. The dictionary maps the characters in the map file to the corresponding agent.
@@ -358,4 +358,3 @@ class CityModel(Model):
 
         self.step_count += 1
         self.schedule.step()
-
