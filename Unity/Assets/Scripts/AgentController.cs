@@ -254,6 +254,7 @@ public class AgentController : MonoBehaviour
          foreach(AgentData agent in  trafficLightsData.positions)
             {
                 Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
+
                 
                 int angle = getTrafficLightAngle(agent.direction);
                 // Check if the agent exists in the trafficLightsAgents dictionary
