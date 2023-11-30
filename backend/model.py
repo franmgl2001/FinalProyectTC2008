@@ -14,26 +14,6 @@ class CityModel(Model):
         N: Number of agents in the simulation
     """
 
-    def count_traffic_around_light(self, traffic_light_pos):
-        """
-        Cuenta los agentes Car alrededor de un semáforo.
-
-        Args:
-            traffic_light_pos (tuple): La posición del semáforo.
-
-        Returns:
-            int: Número de agentes Car cerca del semáforo.
-        """
-        neighborhood = self.grid.get_neighborhood(
-            traffic_light_pos, moore=True, include_center=False
-        )
-        car_count = 0
-        for pos in neighborhood:
-            agents = self.grid.get_cell_list_contents([pos])
-            car_count += sum(isinstance(agent, Car) for agent in agents)
-
-        return car_count
-
     def __init__(self):
         # Load the map dictionary. The dictionary maps the characters in the map file to the corresponding agent.
         dataDictionary = json.load(open("city_files/mapDictionary.json"))
@@ -44,6 +24,10 @@ class CityModel(Model):
         self.step_count = 0
         self.agent_count = 0
         self.destinations = []
+        self.traffic_lights_sets = {}
+        self.traffic_lights_ids = {}
+        self.destroyed = 0
+
         # Load the map file. The map file is a text file where each character represents an agent.
         with open("city_files/2023_base.txt") as baseFile:
             lines = baseFile.readlines()
@@ -94,6 +78,9 @@ class CityModel(Model):
         self.fillTrafficLightsEdges()
         self.fillOtherEdges()
         self.addAllDestiniesToGraph()
+        self.setTrafficLightsSets()
+
+        print(self.traffic_lights_sets)
 
     # Step function. Called every step of the simulation.
 
@@ -351,6 +338,60 @@ class CityModel(Model):
                     self.graph[neighbor].append(destiny)
                     self.graph[destiny] = []
 
+    ############################
+    #### Traffic Lights Sets ###
+    ############################
+
+    # Add traffic lights sets
+    def setTrafficLightsSets(self):
+        """Sets the traffic lights sets."""
+
+        cont = 0
+        done = []
+        for traffic_light in self.traffic_lights:
+            # Get traffic light neighborhood and get the
+            neighborhood = self.grid.get_neighborhood(
+                traffic_light.pos, moore=False, include_center=False
+            )
+            for neighbor in neighborhood:
+                if self.getPosAgent(neighbor, Traffic_Light) and neighbor not in done:
+                    self.traffic_lights_sets[cont] = {
+                        "traffic_light": [
+                            traffic_light.pos,
+                            neighbor,
+                        ],
+                        "invocation": 0,
+                        "cooldown": False,
+                        "toGreen": False,
+                    }
+                    self.traffic_lights_ids[traffic_light.pos] = cont
+                    self.traffic_lights_ids[neighbor] = cont
+
+                    done.append(neighbor)
+                    done.append(traffic_light.pos)
+                    cont += 1
+
+        self.addTrafficLightsNeighborSets()
+
+    # Add traffc lights neighbor sets
+    def addTrafficLightsNeighborSets(self):
+        """Adds the traffic lights neighbor sets."""
+        for key1, value1 in self.traffic_lights_sets.items():
+            for key2, value2 in self.traffic_lights_sets.items():
+                if key1 != key2:
+                    # Check if any of the traffic lights in value1 are neighbors of those in value2
+                    for coord1 in value1["traffic_light"]:
+                        for coord2 in value2["traffic_light"]:
+                            if self.coordinate_difference_chec(coord1, coord2):
+                                self.traffic_lights_sets[key1]["neighbors"] = key2
+
+    def coordinate_difference_chec(self, coord1, coord2):
+        """Checks if the difference between two coordinates is 1."""
+        if abs(coord1[0] - coord2[0]) == 1 and abs(coord1[1] - coord2[1]) == 1:
+            return True
+        else:
+            return False
+
     def step(self):
         """Advance the model by one step."""
         if self.step_count % 3 == 0:
@@ -365,4 +406,3 @@ class CityModel(Model):
 
         self.step_count += 1
         self.schedule.step()
-        print(self.step_count)
