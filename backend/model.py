@@ -1,5 +1,5 @@
 from mesa import Model
-from mesa.time import RandomActivation
+from mesa.time import RandomActivation, BaseScheduler
 from mesa.space import MultiGrid
 from agent import *
 import json
@@ -51,7 +51,7 @@ class CityModel(Model):
             self.height = len(lines)
 
             self.grid = MultiGrid(self.width, self.height, torus=False)
-            self.schedule = RandomActivation(self)
+            self.schedule = BaseScheduler(self)
 
             # Goes through each character in the map file and creates the corresponding agent.
             for r, row in enumerate(lines):
@@ -358,3 +358,4 @@ class CityModel(Model):
 
         self.step_count += 1
         self.schedule.step()
+        print(self.step_count)

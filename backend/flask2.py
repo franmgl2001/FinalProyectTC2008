@@ -49,7 +49,7 @@ def updateModel():
     if request.method == "GET":
         cityModel.step()
         currentStep += 1
-        sendRequest()
+        # sendRequest()
 
         return jsonify(
             {
@@ -88,7 +88,7 @@ def sendRequest():
         ]
     )
     # Send data to the server
-    data = {"year": 2023, "classroom": 302, "name": "Equipo7", "num_cars": cars}
+    data = {"year": 2023, "classroom": 302, "name": "Equipo 7", "num_cars": cars}
     headers = {"Content-type": "application/json"}
     r = requests.post(url, data=json.dumps(data), headers=headers)
     print(r.status_code)
