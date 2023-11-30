@@ -24,6 +24,7 @@ public class AgentData
     public string id;
     public float x, y, z;
     public int state;
+    public string direction;
     
     public AgentData(string id, int state, float x, float y, float z)
     {
@@ -253,10 +254,12 @@ public class AgentController : MonoBehaviour
          foreach(AgentData agent in  trafficLightsData.positions)
             {
                 Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
+                
+                int angle = getTrafficLightAngle(agent.direction);
                 // Check if the agent exists in the trafficLightsAgents dictionary
                 if (!trafficLightsAgents.ContainsKey(agent.id))
                 {
-                    trafficLightsAgents[agent.id] = Instantiate(TrafficLightPrefab, newAgentPosition, Quaternion.identity);
+                    trafficLightsAgents[agent.id] = Instantiate(TrafficLightPrefab, newAgentPosition,  Quaternion.Euler(0, angle, 0));
                     trafficLightsAgents[agent.id].GetComponent<LightsColor>().state = agent.state;
                 }
                 else
@@ -268,6 +271,22 @@ public class AgentController : MonoBehaviour
                 
             }
 
+    int getTrafficLightAngle(string direction)
+    {
+        switch (direction)
+        {
+            case "Left":
+                return 180;
+            case "Right":   
+                return 0;
+            case "Up":
+                return 270;
+            case "Down":
+                return 90;
+            default:
+                return 0;
+        }
+    }
 }
 
 
