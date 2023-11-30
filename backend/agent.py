@@ -192,6 +192,7 @@ class Traffic_Light(Agent):
         self.unique_id = unique_id
         self.state = state
         self.timeToChange = timeToChange
+        self.direction = None
 
         # Get the edge position on edge with direction to the center.
 
