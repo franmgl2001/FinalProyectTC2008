@@ -89,11 +89,11 @@ class CityModel(Model):
 
         self.running = True
 
+        # self.checkThatEdgeDoNotCollide(self, node, interest_node)
+
         self.fillTrafficLightsEdges()
         self.fillOtherEdges()
         self.addAllDestiniesToGraph()
-
-        print(self.graph)
 
     # Step function. Called every step of the simulation.
 
@@ -177,50 +177,92 @@ class CityModel(Model):
                     direction = self.getPosAgent(node, Road).direction
                     self.getOtherConnectedNode(direction, node)
 
+    def checkThatEdgeDoNotCollide(self, node, interest_node):
+        """
+        This function checks that the edge do not collide with another edge.
+        """
+        for n in self.graph[node]:
+            for i in self.graph[interest_node]:
+                if n == i:
+                    return False
+        return True
+
     def getOtherConnectedNode(self, direction, position):
         """Gets the first connected node to based on direction."""
 
         if position[1] != self.height - 1:
-            if direction == "Right" and self.getPosAgent(
-                (position[0] + 1, position[1] + 1), Road
+            if (
+                direction == "Right"
+                and self.getPosAgent((position[0] + 1, position[1] + 1), Road)
+                and self.checkThatEdgeDoNotCollide(
+                    position, (position[0] + 1, position[1] + 1)
+                )
             ):
                 self.graph[position].append((position[0] + 1, position[1] + 1))
 
-            if direction == "Left" and self.getPosAgent(
-                (position[0] - 1, position[1] + 1), Road
+            if (
+                direction == "Left"
+                and self.getPosAgent((position[0] - 1, position[1] + 1), Road)
+                and self.checkThatEdgeDoNotCollide(
+                    position, (position[0] - 1, position[1] + 1)
+                )
             ):
                 self.graph[position].append((position[0] - 1, position[1] + 1))
 
         if position[1] != 0:
-            if direction == "Right" and self.getPosAgent(
-                (position[0] + 1, position[1] - 1), Road
+            if (
+                direction == "Right"
+                and self.getPosAgent((position[0] + 1, position[1] - 1), Road)
+                and self.checkThatEdgeDoNotCollide(
+                    position, (position[0] + 1, position[1] - 1)
+                )
             ):
                 self.graph[position].append((position[0] + 1, position[1] - 1))
 
-            if direction == "Left" and self.getPosAgent(
-                (position[0] - 1, position[1] - 1), Road
+            if (
+                direction == "Left"
+                and self.getPosAgent((position[0] - 1, position[1] - 1), Road)
+                and self.checkThatEdgeDoNotCollide(
+                    position, (position[0] - 1, position[1] - 1)
+                )
             ):
                 self.graph[position].append((position[0] - 1, position[1] - 1))
 
         if position[0] != self.width - 1:
-            if direction == "Up" and self.getPosAgent(
-                (position[0] + 1, position[1] + 1), Road
+            if (
+                direction == "Up"
+                and self.getPosAgent((position[0] + 1, position[1] + 1), Road)
+                and self.checkThatEdgeDoNotCollide(
+                    position, (position[0] + 1, position[1] + 1)
+                )
             ):
                 self.graph[position].append((position[0] + 1, position[1] + 1))
 
-            if direction == "Down" and self.getPosAgent(
-                (position[0] + 1, position[1] - 1), Road
+            if (
+                direction == "Down"
+                and self.getPosAgent((position[0] + 1, position[1] - 1), Road)
+                and self.checkThatEdgeDoNotCollide(
+                    position, (position[0] + 1, position[1] - 1)
+                )
             ):
                 self.graph[position].append((position[0] + 1, position[1] - 1))
 
         if position[0] != 0:
-            if direction == "Up" and self.getPosAgent(
-                (position[0] - 1, position[1] + 1), Road
+            if (
+                direction == "Up"
+                and self.getPosAgent((position[0] - 1, position[1] + 1), Road)
+                and self.checkThatEdgeDoNotCollide(
+                    position, (position[0] - 1, position[1] + 1)
+                )
             ):
                 self.graph[position].append((position[0] - 1, position[1] + 1))
 
-            if direction == "Down" and self.getPosAgent(
-                (position[0] - 1, position[1] - 1), Road
+            if (
+                direction == "Down"
+                and self.getPosAgent((position[0] - 1, position[1] - 1), Road)
+                and self.checkThatEdgeDoNotCollide(
+                    position, (position[0] - 1, position[1] - 1)
+                )
             ):
                 self.graph[position].append((position[0] - 1, position[1] - 1))
 
