@@ -22,6 +22,7 @@ class Car(Agent):
         self.goal = goal
         self.time = 0
         self.last_move = None
+        self.first_move = True
 
     def move(self):
         """
@@ -49,11 +50,14 @@ class Car(Agent):
         next_move = self.avoid_collision(next_move)
 
         # Move the agent to next_move
-        if self.pos != next_move:
-            self.last_move = self.pos
-        self.time = self.model.step_count
+        if self.first_move:
+            self.first_move = False
+        else:
+            if self.pos != next_move:
+                self.last_move = self.pos
+            self.time = self.model.step_count
 
-        self.model.grid.move_agent(self, next_move)
+            self.model.grid.move_agent(self, next_move)
 
     def avoid_collision(self, next_move):
         unchanged_positions = [
@@ -192,6 +196,7 @@ class Traffic_Light(Agent):
         self.unique_id = unique_id
         self.state = state
         self.timeToChange = timeToChange
+        self.direction = None
 
         # Get the edge position on edge with direction to the center.
 

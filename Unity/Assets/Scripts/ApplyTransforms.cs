@@ -91,6 +91,7 @@ public class ApplyTransforms : MonoBehaviour
         float angleRadians = Mathf.Atan2(rotationVector.z, rotationVector.x);
         float angle = angleRadians * Mathf.Rad2Deg;
 
+
         Matrix4x4 rotate = HW_Transforms.RotateMat(angle, rotationAxis);
         // Create a translation matrix
         Matrix4x4 move= HW_Transforms.TranslationMat(lerpPosition.x, lerpPosition.y, lerpPosition.z);

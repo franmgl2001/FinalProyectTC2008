@@ -67,6 +67,7 @@ def getTraffic_Lights():
             {
                 "id": agent.unique_id,
                 "state": 1 if agent.state else 0,
+                "direction": agent.direction,
                 "x": x,
                 "y": 0,
                 "z": z,

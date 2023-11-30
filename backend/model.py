@@ -143,6 +143,10 @@ class CityModel(Model):
                     agent = self.getPosAgent(neighbor, Road)
                     direction = agent.direction
                     if self.graph[agent.pos][0] == traffic_light.pos:
+                        traffic_light_agent = self.getPosAgent(
+                            traffic_light.pos, Traffic_Light
+                        )
+                        traffic_light_agent.direction = direction
                         self.graph[traffic_light.pos] = [
                             self.generateLightEdge(traffic_light.pos, direction)
                         ]
@@ -175,6 +179,9 @@ class CityModel(Model):
                 # If the node has only one edge, then we need to find the other edges
                 if self.getPosAgent(node, Road):
                     direction = self.getPosAgent(node, Road).direction
+                    self.getOtherConnectedNode(direction, node)
+                elif self.getPosAgent(node, Traffic_Light):
+                    direction = self.getPosAgent(node, Traffic_Light).direction
                     self.getOtherConnectedNode(direction, node)
 
     def checkThatEdgeDoNotCollide(self, node, interest_node):
