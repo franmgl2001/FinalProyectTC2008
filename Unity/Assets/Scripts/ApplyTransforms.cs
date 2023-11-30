@@ -28,7 +28,7 @@ public class ApplyTransforms : MonoBehaviour
     public Vector3 endPosition;
     bool isStart=true;
     float currentTime=0;
-    float motionTime=1;
+    float motionTime=1.2f;
     float T=0;
     float carScale=0.3f;
 
@@ -197,6 +197,7 @@ public class ApplyTransforms : MonoBehaviour
         currentTime=0;
         if (isStart){
             startPosition=position;
+            endPosition=position;
         }
     }
 

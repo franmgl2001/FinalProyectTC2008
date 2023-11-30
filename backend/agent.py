@@ -2,6 +2,7 @@ from mesa import Agent
 from aStar import aStar
 import random
 
+
 class Car(Agent):
     """
     Agent that moves randomly.
@@ -19,13 +20,14 @@ class Car(Agent):
         """
         super().__init__(unique_id, model)
         self.goal = goal
+        self.time = 0
+        self.last_move = None
 
     def move(self):
         """
         Determines if the agent can move in the direction that was chosen
         """
         # Check that the agent in possible_steps are rooads and get the direction of the road
-
         path = aStar(self.model.graph, self.pos, self.goal)
 
         if path == None:
@@ -37,11 +39,37 @@ class Car(Agent):
             self.model.schedule.remove(self)
             return
 
-        # Check if the next move is a traffic light
+        # Check if the next move is a car
         next_move = self.checkNextMoveIsNotCar(next_move)
 
+        # Check if the next move is a traffic light
+        next_move = self.checkTrafficLight(next_move)
+
+        # Check for any collisions
+        next_move = self.avoid_collision(next_move)
+
         # Move the agent to next_move
+        if self.pos != next_move:
+            self.last_move = self.pos
+        self.time = self.model.step_count
+
         self.model.grid.move_agent(self, next_move)
+
+    def avoid_collision(self, next_move):
+        unchanged_positions = [
+            node
+            for node in self.model.graph[self.pos]
+            if node[0] == self.pos[0] or node[1] == self.pos[1]
+        ][0]
+        # Find agent in the unchanged positions
+        front_agent = self.model.getPosAgent(unchanged_positions, Car)
+        if front_agent:
+            if front_agent.time == self.model.step_count and (
+                front_agent.last_move[0] == next_move[0]
+                or front_agent.last_move[1] == next_move[1]
+            ):
+                return self.pos
+        return next_move
 
     def checkNextMoveIsNotCar(self, next_move):
         """
@@ -58,7 +86,6 @@ class Car(Agent):
                     # Check again that the next move is not a car
                     agent = self.model.getPosAgent(move, Car)
                     if not agent:
-                        self.model.grid.move_agent(self, move)
                         return move
             return self.pos
 
@@ -69,38 +96,45 @@ class Car(Agent):
         This function checks if there are cars in the sides of the car
         """
         # Check that position is on the bounds of the grid
-        if not self.check_position_on_bounds(self.pos):
-            return True
+
         road = self.model.getPosAgent(self.pos, Road)
         # Traffic light edge case
         if road is None:
             return False
-        if road.direction == "Up" or road.direction == "Down":
-            # Check the right side
-            right = (self.pos[0] + 1, self.pos[1])
-            agent = self.model.getPosAgent(right, Car)
-            if agent:
-                self.model.grid.move_agent(agent, self.pos)
-                return True
-            # Check the left side
-            left = (self.pos[0] - 1, self.pos[1])
-            agent = self.model.getPosAgent(left, Car)
-            if agent:
-                self.model.grid.move_agent(agent, self.pos)
-                return True
-        else:
-            # Check the up side
-            up = (self.pos[0], self.pos[1] + 1)
-            agent = self.model.getPosAgent(up, Car)
-            if agent:
-                self.model.grid.move_agent(agent, self.pos)
-                return True
-            # Check the down side
-            down = (self.pos[0], self.pos[1] - 1)
-            agent = self.model.getPosAgent(down, Car)
-            if agent:
-                self.model.grid.move_agent(agent, self.pos)
-                return True
+        try:
+            if road.direction == "Up" or road.direction == "Down":
+                # Check the right side
+                right = (self.pos[0] + 1, self.pos[1])
+
+                agent = self.model.getPosAgent(right, Car)
+                if not agent:
+                    self.model.grid.move_agent(agent, self.pos)
+                    return True
+                # Check the left side
+                left = (self.pos[0] - 1, self.pos[1])
+
+                agent = self.model.getPosAgent(left, Car)
+                if not agent:
+                    self.model.grid.move_agent(agent, self.pos)
+                    return True
+            else:
+                # Check the up side
+                up = (self.pos[0], self.pos[1] + 1)
+
+                agent = self.model.getPosAgent(up, Car)
+                if not agent:
+                    self.model.grid.move_agent(agent, self.pos)
+                    return True
+                # Check the down side
+                down = (self.pos[0], self.pos[1] - 1)
+
+                agent = self.model.getPosAgent(down, Car)
+                if not agent:
+                    self.model.grid.move_agent(agent, self.pos)
+                    return True
+        except:
+            # Out of bounds position
+            return False
 
     def check_position_on_bounds(self, pos):
         """
@@ -166,12 +200,15 @@ class Traffic_Light(Agent):
         Cambia el estado del semáforo en base al tráfico detectado.
         """
         traffic_count = self.model.count_traffic_around_light(self.pos)
-        
+
         # Puedes ajustar estos valores según necesites
         traffic_threshold_for_change = 4  # cambiar si hay 3 o más coches
         time_threshold_for_change = 10  # cambiar cada 10 pasos
-        
-        if traffic_count >= traffic_threshold_for_change or self.model.schedule.steps % time_threshold_for_change == 0:
+
+        if (
+            traffic_count >= traffic_threshold_for_change
+            or self.model.schedule.steps % time_threshold_for_change == 0
+        ):
             self.state = not self.state
 
 

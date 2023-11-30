@@ -1,5 +1,5 @@
 from mesa import Model
-from mesa.time import RandomActivation
+from mesa.time import RandomActivation, BaseScheduler
 from mesa.space import MultiGrid
 from agent import *
 import json
@@ -13,6 +13,7 @@ class CityModel(Model):
     Args:
         N: Number of agents in the simulation
     """
+
     def count_traffic_around_light(self, traffic_light_pos):
         """
         Cuenta los agentes Car alrededor de un semáforo.
@@ -33,7 +34,6 @@ class CityModel(Model):
 
         return car_count
 
-
     def __init__(self):
         # Load the map dictionary. The dictionary maps the characters in the map file to the corresponding agent.
         dataDictionary = json.load(open("city_files/mapDictionary.json"))
@@ -51,7 +51,7 @@ class CityModel(Model):
             self.height = len(lines)
 
             self.grid = MultiGrid(self.width, self.height, torus=False)
-            self.schedule = RandomActivation(self)
+            self.schedule = BaseScheduler(self)
 
             # Goes through each character in the map file and creates the corresponding agent.
             for r, row in enumerate(lines):
@@ -358,4 +358,4 @@ class CityModel(Model):
 
         self.step_count += 1
         self.schedule.step()
-
+        print(self.step_count)
