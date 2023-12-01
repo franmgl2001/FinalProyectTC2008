@@ -1,7 +1,8 @@
 """
 TC2008B. Sistemas Multiagentes y Gráficas Computacionales Final Project
 This file contains the agents used in the model.
-Collaborators: Francisco Martinez Gallardo, Omar Rivera,
+Collaborators: Francisco Martinez Gallardo, Omar Rivera
+Date: 2023-11-30
 """
 from mesa import Agent
 from a_star import a_star

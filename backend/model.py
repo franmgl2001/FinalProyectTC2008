@@ -1,3 +1,9 @@
+"""
+TC2008B. Sistemas Multiagentes y Gráficas Computacionales Final Project
+Python model declaration script.
+Collaborators:Francisco Martinez Gallardo, Omar Rivera
+Date: 2023-11-30
+"""
 from mesa import Model
 from mesa.time import RandomActivation, BaseScheduler
 from mesa.space import MultiGrid
@@ -418,7 +424,6 @@ class CityModel(Model):
         """Advance the model by one step."""
         if self.step_count % 1 == 0:
             self.spawn_agents()
-        print(self.find_spawn_postions())
         if len(self.find_spawn_postions()) == 0:
             self.running = False
 

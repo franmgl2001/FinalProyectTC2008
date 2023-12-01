@@ -5,7 +5,7 @@ import math
 Astar algorithm implementation for graph with chatgpt inspiration. 
 This implementation is used on the graph made on model.py.
 Collaborators:  Francisco Martinez Gallardo, Omar Rivera, 
-
+Date: 2023-11-30
 """
 
 

@@ -1,7 +1,8 @@
 """
 TC2008B. Sistemas Multiagentes y Gráficas Computacionales Final Project
 Python flask server to interact with Unity. Based on the code provided by Sergio Ruiz.
-Collaborators: Octavio Hinojosa, Francisco Martinez Gallardo, Omar Rivera, 
+Collaborators: Octavio Hinojosa, Francisco Martinez Gallardo, Omar Rivera
+Date: 2023-11-30
 """
 # Import libraries
 from flask import Flask, request, jsonify

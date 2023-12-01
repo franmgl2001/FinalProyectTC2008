@@ -1,3 +1,8 @@
+/*
+This script is used to create the city layout from a text file.
+Collaborators:Gilberto Echeverria, Octavio Hinojosa, Omar Rivera, Francisco Martinez Gallardo
+*/
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,15 +55,11 @@ public class CityMaker : MonoBehaviour
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(roadPrefab, position, Quaternion.identity);
                 tile.transform.parent = transform;
-                //tile = Instantiate(semaphorePrefab, position, Quaternion.identity);
-                //tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == 'S') {
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(roadPrefab, position, Quaternion.Euler(0, 90, 0));
                 tile.transform.parent = transform;
-                //tile = Instantiate(semaphorePrefab, position, Quaternion.Euler(0, 90, 0));
-                //tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == 'D') {
                 int rand= Random.Range(0,buildingPrefab.Length);

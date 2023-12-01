@@ -2,6 +2,7 @@
 TC2008B. Sistemas Multiagentes y Gráficas Computacionales Final Project
 This file is used to visualize the model in the browser.
 Collaborators: Francisco Martinez Gallardo, Omar Rivera, Octavio Hinojosa
+Date: 2023-11-30
 """
 
 from agent import *
