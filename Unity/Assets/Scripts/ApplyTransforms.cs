@@ -89,7 +89,6 @@ public class ApplyTransforms : MonoBehaviour
     }
 
     void DoTransform(){
-        Debug.Log("Direction: " + direction);
         Vector3 lerpPosition=lerp(startPosition, endPosition);
         // Ge the rotation vector
         Vector3 rotationVector = new Vector3(0,0,0);

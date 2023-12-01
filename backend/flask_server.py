@@ -51,7 +51,7 @@ def getAgents():
                 agent["direction"] = cityModel.get_pos_agent(
                     (agent["x"], agent["z"]), Road
                 ).direction
-            except:  # If there is no road, the car is destroyed
+            except:  # If there is no road the car is on a traffic light
                 agent["direction"] = cityModel.get_pos_agent(
                     (agent["x"], agent["z"]), Traffic_Light
                 ).direction
