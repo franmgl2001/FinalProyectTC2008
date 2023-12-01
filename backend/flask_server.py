@@ -7,7 +7,7 @@ Date: 2023-11-30
 # Import libraries
 from flask import Flask, request, jsonify
 from model import CityModel
-from agent import Car, Traffic_Light
+from agent import Car, Traffic_Light, Road
 import requests
 import json
 
@@ -45,6 +45,17 @@ def getAgents():
             if isinstance(agent, Car)
         ]  # Comprehension list to get the positions of the agents
 
+        # Get the directions of the roads on that position
+        for agent in agentPositions:
+            try:  # Try to get the direction of the road
+                agent["direction"] = cityModel.get_pos_agent(
+                    (agent["x"], agent["z"]), Road
+                ).direction
+            except:  # If there is no road, the car is destroyed
+                agent["direction"] = cityModel.get_pos_agent(
+                    (agent["x"], agent["z"]), Traffic_Light
+                ).direction
+
         return jsonify(
             {"positions": agentPositions}
         )  # Return the positions of the agents
@@ -62,7 +73,7 @@ def updateModel():
             pass
 
         if currentStep == 1000:
-            # Stop the server
+            # Stop the server for competition
             raise KeyboardInterrupt
         currentStep += 1
         return jsonify(

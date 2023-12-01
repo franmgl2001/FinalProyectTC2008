@@ -192,14 +192,14 @@ public class AgentController : MonoBehaviour
                             // Get the ApplyTransforms component of the agent and set the position
                             ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();
                             // Send the new position to the ApplyTransforms component for it to move
-                            applyTransforms.movePosition(newAgentPosition, true);
+                            applyTransforms.movePosition(newAgentPosition, true, agent.direction);
                         }
                         else
                         {
                             // Get the ApplyTransforms component of the agent and set the position
                             ApplyTransforms applyTransforms = agents[agent.id].GetComponent<ApplyTransforms>();  
                             // Send the new position to the ApplyTransforms component for it to move
-                            applyTransforms.movePosition(newAgentPosition, false);                 
+                            applyTransforms.movePosition(newAgentPosition, false, agent.direction);                 
                         }
             }
 
