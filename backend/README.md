@@ -16,3 +16,6 @@ This project will be built using unity and mesa (python framework), during this 
 ### Teachers
 - Octavio Hinojosa
 - Gilberto Echeverria
+
+##Video a demostración de simulación
+- https://youtu.be/nekLdYJseuo
