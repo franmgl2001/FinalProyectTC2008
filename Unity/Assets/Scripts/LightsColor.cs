@@ -1,40 +1,28 @@
+/*
+This script is used to change the color of the traffic lights. of the traffic lights.
+Collaborators:Francisco Martinez Gallardo, Omar Rivera
+Date: 2023-11-30
+*/
+
 using UnityEngine;
 
 public class LightsColor : MonoBehaviour
 {
-    public Material greenLightMaterial; 
-    public Material redLightMaterial;   
-    public Color greenLightColor = Color.green; 
-    public Color redLightColor = Color.red;   
-    public float changeInterval = 5.0f;
-    public int state = 0;
+    public Material greenLightMaterial; // Green light material
+    public Material redLightMaterial; // Red light material 
+    public Color greenLightColor = Color.green; // Green light color
+    public Color redLightColor = Color.red; // Red light color
+    public float changeInterval = 5.0f; // Time interval to change the color of the traffic light
+    public int state = 0; // State of the traffic light
+    private MeshRenderer meshRenderer;// Mesh renderer of the traffic light
+    private Light trafficLight;// Light of the traffic light
 
-    private MeshRenderer meshRenderer;
-    private Light trafficLight;
-    private float timer;
-    private bool isGreen = true;
 
     void Start()
     {
+        // Get the mesh renderer and light component of the traffic light
         meshRenderer = GetComponent<MeshRenderer>();
         trafficLight = GetComponent<Light>();
-
-        if (meshRenderer == null)
-        {
-            Debug.LogError("No MeshRenderer component found on the traffic light object.");
-            return;
-        }
-
-        if (trafficLight == null)
-        {
-            Debug.LogError("No Light component found on the traffic light object.");
-            return;
-        }
-
-        // Comenzar con la luz verde
-        meshRenderer.material = greenLightMaterial;
-        trafficLight.color = greenLightColor;
-        timer = changeInterval;
     }
 
     void Update()

@@ -1,3 +1,10 @@
+/*
+This script is used to apply the transformations to the car and the wheels.
+Collaborators:Francisco Martinez Gallardo, Omar Rivera
+Date: 2023-11-30
+*/
+
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,7 +36,6 @@ public class ApplyTransforms : MonoBehaviour
     bool isStart=true;
     float currentTime=0;
     float motionTime=1.2f;
-    float T=0;
     float carScale=0.3f;
 
     
@@ -83,11 +89,11 @@ public class ApplyTransforms : MonoBehaviour
     }
 
     void DoTransform(){
-        float timeLerp = getT();
-        Vector3 lerpPosition=PositionLerp(startPosition, endPosition, timeLerp);
+        Vector3 lerpPosition=lerp(startPosition, endPosition);
         // Ge the rotation vector
         Vector3 rotationVector = new Vector3(0,0,0);
         rotationVector = endPosition - startPosition;
+        // Get the angle of rotation
         float angleRadians = Mathf.Atan2(rotationVector.z, rotationVector.x);
         float angle = angleRadians * Mathf.Rad2Deg;
 
@@ -150,51 +156,37 @@ public class ApplyTransforms : MonoBehaviour
             }
         }
 
-        /*
-
-        Matrix4x4 posicionIAtras = HW_Transforms.TranslationMat(0.757f, 0.367f, -1.23f);
-
-        Matrix4x4 rotateW1=HW_Transforms.RotateMat(wheelAngle * Time.time, wheelAxis );
-        // Create a scaling matrix
-        Matrix4x4 scaleMatrix = HW_Transforms.ScaleMat(scaleFactor, scaleFactor, scaleFactor);
-        Debug.Log("scaleMatrix: " + newVertices1.Length);
-        // Do the same for the wheel
-        for (int i=0; i<newVertices1.Length; i++)
-        {
-            Vector4 temp = new Vector4(baseVertices1[i].x, baseVertices1[i].y, baseVertices1[i].z, 1);
-
-            newVertices1[i] = composite * posicionIAtras * rotateW1 * scaleMatrix * temp ;
-        }
-
-  
-
-        mesh1.vertices = newVertices1;
-        mesh1.RecalculateNormals();
-        */
-
     
     }
 
-    Vector3 PositionLerp(Vector3 start, Vector3 end, float time)
+    Vector3 lerp(Vector3 startPos, Vector3 endPos)
     {
-        return start + (end - start) * time;
+        /*
+        Calculate the linear interpolation between two vectors
+        */
+        return startPos + (endPos - startPos) * getTime();
     }
 
-    float getT(){
-        currentTime+=Time.deltaTime;
-        T=currentTime/motionTime;
-        if(T>1){
-            T=1;
+    float getTime(){
+        /*
+        Get the time that has passed since the movement started
+        */
+        float lerpTime=0;
+        currentTime += Time.deltaTime;
+        lerpTime=currentTime / motionTime;
+        if(lerpTime>1){
+            lerpTime=1;
         }
-        return T;
+        return lerpTime;
     }
 
-    //Como se hace get position? Que tiene que ver con el api?
-    public void getPosition(Vector3 position, bool isStart){
-        //swap variables de donde estas y a donde vas.
+    
+    public void movePosition(Vector3 position, bool isStart){
+        /*
+        Get the position of the car
+        */
         startPosition=endPosition;
         endPosition=position;
-        //cuanto tiempo ha pasado desde que empezaste a moverte
         currentTime=0;
         if (isStart){
             startPosition=position;
@@ -203,6 +195,9 @@ public class ApplyTransforms : MonoBehaviour
     }
 
     public void removeWheels(){
+        /*
+        Remove the wheels from the scene
+        */
         for (int i = 0; i < wheels.Length; i++)
         {
             Destroy(wheels[i]);
