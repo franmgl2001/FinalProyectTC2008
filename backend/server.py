@@ -1,9 +1,16 @@
+"""
+TC2008B. Sistemas Multiagentes y Gráficas Computacionales Final Project
+This file is used to visualize the model in the browser.
+Collaborators: Francisco Martinez Gallardo, Omar Rivera, Octavio Hinojosa
+"""
+
 from agent import *
 from model import CityModel
 from mesa.visualization import CanvasGrid, BarChartModule
 from mesa.visualization import ModularServer
 
 
+# Mesa visualization
 def agent_portrayal(agent):
     if agent is None:
         return
@@ -39,6 +46,7 @@ def agent_portrayal(agent):
     return portrayal
 
 
+# Width and height of the grid
 width = 0
 height = 0
 

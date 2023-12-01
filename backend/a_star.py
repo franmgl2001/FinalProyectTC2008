@@ -1,8 +1,18 @@
 import heapq
 import math
 
+"""
+Astar algorithm implementation for graph with chatgpt inspiration. 
+This implementation is used on the graph made on model.py.
+Collaborators:  Francisco Martinez Gallardo, Omar Rivera, 
 
-def aStar(graph, start, goal):
+"""
+
+
+def a_star(graph, start, goal):
+    """
+    This function implements the A* algorithm to find the shortest path between two nodes in a graph.
+    """
     # Initialize the open and closed sets
     open_set = [(0, start)]  # Priority queue of (f_score, node)
     closed_set = set()
@@ -54,6 +64,9 @@ def aStar(graph, start, goal):
 
 
 def euclidean_distance(point1, point2):
+    """
+    This function calculates the Euclidean distance between two points.
+    """
     x1, y1 = point1
     x2, y2 = point2
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
