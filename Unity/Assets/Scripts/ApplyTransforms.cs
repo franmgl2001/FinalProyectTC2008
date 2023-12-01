@@ -96,6 +96,7 @@ public class ApplyTransforms : MonoBehaviour
         // Get the angle of rotation
         float angleRadians = Mathf.Atan2(rotationVector.z, rotationVector.x);
         float angle = angleRadians * Mathf.Rad2Deg;
+        
 
         if (endPosition == startPosition)
         {
@@ -219,15 +220,15 @@ public class ApplyTransforms : MonoBehaviour
         switch (direction)
         {
             case "Left":
-                return 180;
+                return 0;
             case "Right":   
-                return 0;
+                return 180;
             case "Up":
-                return 270;
-            case "Down":
                 return 90;
+            case "Down":
+                return 270;
             default:
-                return 0;
+                return 90;
         }
     }
 }

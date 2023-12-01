@@ -183,7 +183,7 @@ public class AgentController : MonoBehaviour
  
                     
                     Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
-
+                    
                         // Check that agent id exists in agents dictionary
                         if(!agents.ContainsKey(agent.id))
                         {
@@ -201,6 +201,7 @@ public class AgentController : MonoBehaviour
                             // Send the new position to the ApplyTransforms component for it to move
                             applyTransforms.movePosition(newAgentPosition, false, agent.direction);                 
                         }
+                    
             }
 
             removeAgent();
@@ -289,9 +290,9 @@ public class AgentController : MonoBehaviour
         switch (direction)
         {
             case "Left":
-                return 180;
-            case "Right":   
                 return 0;
+            case "Right":   
+                return 180;
             case "Up":
                 return 270;
             case "Down":
