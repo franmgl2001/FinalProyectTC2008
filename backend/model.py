@@ -422,7 +422,7 @@ class CityModel(Model):
 
     def step(self):
         """Advance the model by one step."""
-        if self.step_count % 1 == 0:
+        if self.step_count % 3 == 0:
             self.spawn_agents()
         if len(self.find_spawn_postions()) == 0:
             self.running = False

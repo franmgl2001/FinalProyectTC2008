@@ -33,10 +33,10 @@ public class ApplyTransforms : MonoBehaviour
     // Lerp variables
     Vector3 startPosition;
     public Vector3 endPosition;
-    bool isStart=true;
     float currentTime=0;
     float motionTime=1.2f;
     float carScale=0.3f;
+    string direction;
 
     
     void Start()
@@ -97,6 +97,16 @@ public class ApplyTransforms : MonoBehaviour
         float angleRadians = Mathf.Atan2(rotationVector.z, rotationVector.x);
         float angle = angleRadians * Mathf.Rad2Deg;
 
+        if (endPosition == startPosition)
+        {
+            wheelAngle = 0;
+            angle = getStaticCarAngle(direction);
+        }
+        else
+        {
+            wheelAngle = 30;
+        }
+
 
         Matrix4x4 rotate = HW_Transforms.RotateMat(angle, rotationAxis);
         // Create a translation matrix
@@ -119,11 +129,9 @@ public class ApplyTransforms : MonoBehaviour
         }
         
         // Update the vertices of the car and recalculate normals\
-        if (startPosition!=endPosition){
             mesh.vertices = newVertices;
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
-        }
         
         
         // Now do the same for the wheels
@@ -149,11 +157,9 @@ public class ApplyTransforms : MonoBehaviour
                 newVerticesWheels[i][j] = composite * wheelPositions[i] * rotateWheels * scaleMatrix * temp;
             }
              // Update the vertices of the wheels and recalculate normals
-            if (startPosition!=endPosition){
                 meshWheels[i].vertices = newVerticesWheels[i];
                 meshWheels[i].RecalculateNormals();
                 meshWheels[i].RecalculateBounds();
-            }
         }
 
     
@@ -181,13 +187,14 @@ public class ApplyTransforms : MonoBehaviour
     }
 
     
-    public void movePosition(Vector3 position, bool isStart){
+    public void movePosition(Vector3 position, bool isStart, string paramDirection){
         /*
         Get the position of the car
         */
         startPosition=endPosition;
         endPosition=position;
         currentTime=0;
+        direction=paramDirection;
         if (isStart){
             startPosition=position;
             endPosition=position;
@@ -204,4 +211,24 @@ public class ApplyTransforms : MonoBehaviour
         }
     }
 
+    int getStaticCarAngle(string direction)
+    {
+        /*
+        The getTrafficLightAngle method is used to get the angle of the traffic light.
+        */
+        switch (direction)
+        {
+            case "Left":
+                return 180;
+            case "Right":   
+                return 0;
+            case "Up":
+                return 270;
+            case "Down":
+                return 90;
+            default:
+                return 0;
+        }
+    }
 }
+

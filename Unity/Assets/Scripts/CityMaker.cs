@@ -1,6 +1,6 @@
 /*
 This script is used to create the city layout from a text file.
-Collaborators:Gilberto Echeverria, Octavio Hinojosa, Omar Rivera, Francisco Martinez Gallardo
+Collaborators:Gilberto Echeverria, Octavio Navarro, Omar Rivera, Francisco Martinez Gallardo
 */
 
 using System.Collections;
